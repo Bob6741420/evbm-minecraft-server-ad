@@ -733,6 +733,133 @@
 
     .toast.show { transform: translateX(-50%) translateY(0); }
 
+    /* ---- MARQUEE ---- */
+    .marquee-wrap {
+      background: var(--brown-dark);
+      border-top: 3px solid var(--brown-mid);
+      border-bottom: 3px solid var(--brown-mid);
+      overflow: hidden;
+      padding: 12px 0;
+      white-space: nowrap;
+    }
+
+    .marquee-track {
+      display: inline-block;
+      animation: marqueeScroll 30s linear infinite;
+    }
+
+    .marquee-track span {
+      font-size: 0.45rem;
+      color: var(--gold);
+      letter-spacing: 2px;
+      margin: 0 40px;
+    }
+
+    .marquee-track span.red { color: var(--red-bright); }
+
+    @keyframes marqueeScroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ---- STATS ---- */
+    .hero-stats {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 40px;
+      z-index: 1;
+      position: relative;
+    }
+
+    .stat-block {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: clamp(1rem, 3vw, 1.6rem);
+      color: var(--gold);
+      text-shadow: 2px 2px 0 var(--brown-dark);
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 0.35rem;
+      color: var(--gray);
+      letter-spacing: 2px;
+      margin-top: 6px;
+      display: block;
+    }
+
+    /* ---- HOW TO JOIN ---- */
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      margin-top: 20px;
+    }
+
+    .how-step {
+      background: var(--bg2);
+      border: 4px solid var(--brown-dark);
+      padding: 28px 20px;
+      text-align: center;
+      position: relative;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .how-step:hover {
+      border-color: var(--gold);
+      transform: translateY(-4px);
+    }
+
+    .step-num {
+      font-size: 2rem;
+      color: var(--gold);
+      text-shadow: 3px 3px 0 var(--brown-dark);
+      display: block;
+      margin-bottom: 14px;
+    }
+
+    .how-step h3 {
+      font-size: 0.55rem;
+      color: var(--white);
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+
+    .how-step p {
+      font-family: 'VT323', monospace;
+      font-size: 1.1rem;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    /* ---- CLICK BURST ---- */
+    .burst-pixel {
+      position: fixed;
+      width: 8px; height: 8px;
+      pointer-events: none;
+      z-index: 9999;
+      animation: burstFly 0.6s ease-out forwards;
+    }
+
+    @keyframes burstFly {
+      0%   { opacity: 1; transform: translate(0,0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
+    }
+
+    /* ---- CHAMPION PULSE ---- */
+    .rank-champion {
+      animation: championPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes championPulse {
+      0%, 100% { box-shadow: 0 0 8px rgba(111,240,255,0.3); }
+      50%       { box-shadow: 0 0 20px rgba(111,240,255,0.8), 0 0 40px rgba(111,240,255,0.3); }
+    }
+
     /* ---- RESPONSIVE ---- */
     @media (max-width: 600px) {
       nav ul { display: none; }
@@ -787,7 +914,29 @@
     <a href="#features" class="btn-secondary">LEARN MORE</a>
   </div>
 
+  <div class="hero-stats">
+    <div class="stat-block">
+      <span class="stat-num" data-target="247">0</span>
+      <span class="stat-label">PLAYERS ONLINE</span>
+    </div>
+    <div class="stat-block">
+      <span class="stat-num" data-target="1284930">0</span>
+      <span class="stat-label">TICKETS EARNED</span>
+    </div>
+    <div class="stat-block">
+      <span class="stat-num" data-target="60">0</span>
+      <span class="stat-label">COURSES</span>
+    </div>
+  </div>
+
   <div class="scroll-hint">▼ SCROLL DOWN ▼</div>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span>EARN TICKETS</span><span class="red">&#9670; PARKOUR BATTLE &#9670;</span><span>RANK UP</span><span class="red">&#9670; JOIN NOW &#9670;</span><span>EXPLORE COURSES</span><span class="red">&#9670; EVBM PK CIV &#9670;</span><span>BECOME CHAMPION</span><span class="red">&#9670; evbm.minehut.gg &#9670;</span><span>EARN TICKETS</span><span class="red">&#9670; PARKOUR BATTLE &#9670;</span><span>RANK UP</span><span class="red">&#9670; JOIN NOW &#9670;</span><span>EXPLORE COURSES</span><span class="red">&#9670; EVBM PK CIV &#9670;</span><span>BECOME CHAMPION</span><span class="red">&#9670; evbm.minehut.gg &#9670;</span>
+  </div>
 </div>
 
 <!-- FEATURES -->
@@ -870,6 +1019,32 @@
 </div>
 
 
+<!-- HOW TO JOIN -->
+<div style="background: var(--bg2); max-width:100%; padding: 80px 40px;">
+  <div style="max-width:1200px; margin:0 auto;">
+    <div class="section-label">// GET STARTED</div>
+    <h2 class="section-title">HOW TO JOIN</h2>
+    <p class="section-sub">Three steps. That's all it takes.</p>
+    <div class="how-grid">
+      <div class="how-step">
+        <span class="step-num">1</span>
+        <h3>OPEN MINECRAFT</h3>
+        <p>Launch Minecraft Java Edition and head to Multiplayer.</p>
+      </div>
+      <div class="how-step">
+        <span class="step-num">2</span>
+        <h3>ADD THE SERVER</h3>
+        <p>Click "Add Server" and enter <strong style="color:var(--gold);">evbm.minehut.gg</strong> as the address.</p>
+      </div>
+      <div class="how-step">
+        <span class="step-num">3</span>
+        <h3>START RUNNING</h3>
+        <p>Jump in, hit the courses, earn your first tickets, and start climbing the ranks.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- CTA -->
 <div id="cta">
   <div class="inner">
@@ -940,6 +1115,63 @@
     grid.appendChild(block);
   }
 
+  // ---- Typewriter on hero tagline ----
+  const tagline = document.querySelector('.hero-tagline');
+  const originalHTML = tagline.innerHTML;
+  tagline.innerHTML = '';
+  tagline.style.visibility = 'visible';
+  let charIndex = 0;
+  const plain = originalHTML.replace(/<[^>]+>/g, '');
+  function typeNext() {
+    if (charIndex <= plain.length) {
+      // rebuild with span highlight on "Battle."
+      const typed = plain.slice(0, charIndex);
+      tagline.innerHTML = typed.replace('Battle.', '<span>Battle.</span>') + (charIndex < plain.length ? '█' : '');
+      charIndex++;
+      setTimeout(typeNext, charIndex < 20 ? 60 : 30);
+    }
+  }
+  setTimeout(typeNext, 600);
+
+  // ---- Animated stat counters ----
+  const statNums = document.querySelectorAll('.stat-num[data-target]');
+  const statObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const target = parseInt(el.dataset.target);
+      const duration = 1800;
+      const start = performance.now();
+      function tick(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.floor(eased * target).toLocaleString();
+        if (progress < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+      statObserver.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  statNums.forEach(el => statObserver.observe(el));
+
+  // ---- Click pixel burst ----
+  const burstColors = ['#F5D479','#FF7070','#C4845A','#6FF0FF','#C060FF','#60D060'];
+  document.addEventListener('click', (e) => {
+    for (let i = 0; i < 8; i++) {
+      const px = document.createElement('div');
+      px.className = 'burst-pixel';
+      const angle = (i / 8) * Math.PI * 2;
+      const dist = 40 + Math.random() * 40;
+      px.style.left = e.clientX + 'px';
+      px.style.top  = e.clientY + 'px';
+      px.style.background = burstColors[Math.floor(Math.random() * burstColors.length)];
+      px.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+      px.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+      document.body.appendChild(px);
+      setTimeout(() => px.remove(), 600);
+    }
+  });
+
   // ---- Scroll animations ----
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {
@@ -950,7 +1182,7 @@
     });
   }, { threshold: 0.1 });
 
-  document.querySelectorAll('.feature-card, .rank-badge, .leaderboard-table tr').forEach(el => {
+  document.querySelectorAll('.feature-card, .rank-badge, .how-step').forEach(el => {
     el.style.opacity = '0';
     el.style.transform = 'translateY(20px)';
     el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';

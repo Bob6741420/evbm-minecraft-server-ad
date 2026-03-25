@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EVBM PK CIV - Parkour Civilization</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:        #1a1a1e;
+      --bg2:       #141418;
+      --brown-dark:#5C3A1E;
+      --brown-mid: #8B5E3C;
+      --brown-light:#C4845A;
+      --gold:      #F5D479;
+      --gold-glow: #FFE89A;
+      --red-dark:  #5C1A1A;
+      --red-mid:   #B83232;
+      --red-light: #E05555;
+      --red-bright:#FF7070;
+      --white:     #F0E8D8;
+      --gray:      #888;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Press Start 2P', monospace;
+      overflow-x: hidden;
+      image-rendering: pixelated;
+    }
+
+    /* ---- PIXEL HELPERS ---- */
+    .pixel-border-brown {
+      box-shadow:
+        0 -4px 0 0 var(--brown-dark),
+        0  4px 0 0 var(--brown-dark),
+        -4px 0 0 0 var(--brown-dark),
+         4px 0 0 0 var(--brown-dark);
+      border: 4px solid var(--brown-mid);
+    }
+
+    .pixel-border-red {
+      box-shadow:
+        0 -4px 0 0 var(--red-dark),
+        0  4px 0 0 var(--red-dark),
+        -4px 0 0 0 var(--red-dark),
+         4px 0 0 0 var(--red-dark);
+      border: 4px solid var(--red-mid);
+    }
+
+    /* ---- NAV ---- */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(20,20,24,0.95);
+      border-bottom: 4px solid var(--brown-mid);
+      padding: 14px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+
+    .nav-logo .top {
+      font-size: 0.8rem;
+      color: var(--gold);
+      text-shadow: 2px 2px 0 var(--brown-dark);
+      letter-spacing: 3px;
+    }
+
+    .nav-logo .bot {
+      font-size: 0.55rem;
+      color: var(--red-light);
+      text-shadow: 1px 1px 0 var(--red-dark);
+      letter-spacing: 2px;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 28px;
+    }
+
+    nav ul a {
+      color: var(--white);
+      text-decoration: none;
+      font-size: 0.45rem;
+      letter-spacing: 1px;
+      transition: color 0.2s;
+    }
+
+    nav ul a:hover { color: var(--gold); }
+
+    .nav-ip {
+      font-size: 0.45rem;
+      color: var(--gold);
+      background: var(--brown-dark);
+      border: 2px solid var(--brown-mid);
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+      letter-spacing: 1px;
+    }
+
+    .nav-ip:hover { background: var(--brown-mid); }
+
+    /* ---- HERO ---- */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      padding: 100px 20px 60px;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 40%, rgba(92,58,30,0.25) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 50% 70%, rgba(92,26,26,0.2) 0%, transparent 70%),
+        var(--bg);
+      overflow: hidden;
+    }
+
+    /* Animated background grid */
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(245,212,121,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(245,212,121,0.04) 1px, transparent 1px);
+      background-size: 32px 32px;
+      animation: gridScroll 20s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes gridScroll {
+      from { background-position: 0 0; }
+      to   { background-position: 32px 32px; }
+    }
+
+    /* Floating particles */
+    .particle {
+      position: absolute;
+      width: 8px; height: 8px;
+      background: var(--gold);
+      opacity: 0;
+      animation: floatUp 6s ease-in infinite;
+    }
+
+    @keyframes floatUp {
+      0%   { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.6; }
+      90%  { opacity: 0.2; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* Logo block */
+    .hero-logo {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 20px;
+    }
+
+    .logo-evbm {
+      font-size: clamp(2.5rem, 8vw, 5.5rem);
+      color: var(--brown-light);
+      text-shadow:
+        4px 4px 0 var(--brown-dark),
+        8px 8px 0 rgba(0,0,0,0.5),
+        0 0 40px rgba(245,212,121,0.3);
+      letter-spacing: 6px;
+      display: block;
+      animation: logoFloat 3s ease-in-out infinite;
+    }
+
+    .logo-pkciv {
+      font-size: clamp(1.8rem, 6vw, 4rem);
+      color: var(--red-light);
+      text-shadow:
+        3px 3px 0 var(--red-dark),
+        6px 6px 0 rgba(0,0,0,0.5),
+        0 0 30px rgba(224,85,85,0.3);
+      letter-spacing: 4px;
+      display: block;
+      margin-top: -10px;
+    }
+
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-8px); }
+    }
+
+    .hero-tagline {
+      font-size: clamp(0.4rem, 1.5vw, 0.65rem);
+      color: var(--gold);
+      letter-spacing: 2px;
+      margin: 24px 0 40px;
+      line-height: 2;
+      z-index: 1;
+      position: relative;
+    }
+
+    .hero-tagline span {
+      color: var(--red-bright);
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      z-index: 1;
+      position: relative;
+    }
+
+    .btn-primary {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.6rem;
+      background: var(--red-mid);
+      color: var(--white);
+      border: none;
+      padding: 16px 32px;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.1s;
+      box-shadow:
+        inset -4px -4px 0 var(--red-dark),
+        inset 4px 4px 0 var(--red-bright),
+        4px 4px 0 rgba(0,0,0,0.5);
+      text-decoration: none;
+      display: inline-block;
+      letter-spacing: 1px;
+    }
+
+    .btn-primary:hover {
+      transform: translate(-2px, -2px);
+      box-shadow:
+        inset -4px -4px 0 var(--red-dark),
+        inset 4px 4px 0 var(--red-bright),
+        6px 6px 0 rgba(0,0,0,0.5);
+    }
+
+    .btn-primary:active { transform: translate(2px, 2px); box-shadow: none; }
+
+    .btn-secondary {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.6rem;
+      background: var(--brown-mid);
+      color: var(--white);
+      border: none;
+      padding: 16px 32px;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.1s;
+      box-shadow:
+        inset -4px -4px 0 var(--brown-dark),
+        inset 4px 4px 0 var(--brown-light),
+        4px 4px 0 rgba(0,0,0,0.5);
+      text-decoration: none;
+      display: inline-block;
+      letter-spacing: 1px;
+    }
+
+    .btn-secondary:hover {
+      transform: translate(-2px, -2px);
+      box-shadow:
+        inset -4px -4px 0 var(--brown-dark),
+        inset 4px 4px 0 var(--brown-light),
+        6px 6px 0 rgba(0,0,0,0.5);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.4rem;
+      color: var(--gray);
+      letter-spacing: 2px;
+      animation: bounce 2s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%       { transform: translateX(-50%) translateY(8px); }
+    }
+
+    /* ---- SECTION SHARED ---- */
+    section {
+      padding: 80px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.45rem;
+      color: var(--red-light);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(1rem, 3vw, 1.8rem);
+      color: var(--gold);
+      text-shadow: 3px 3px 0 var(--brown-dark);
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .section-sub {
+      font-family: 'VT323', monospace;
+      font-size: 1.3rem;
+      color: var(--gray);
+      max-width: 600px;
+      line-height: 1.6;
+      margin-bottom: 60px;
+    }
+
+    /* ---- FEATURES ---- */
+    #features {
+      background:
+        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      max-width: 100%;
+      padding: 80px 40px;
+    }
+
+    #features .inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      margin-top: 20px;
+    }
+
+    .feature-card {
+      background: var(--bg);
+      border: 4px solid var(--brown-dark);
+      padding: 32px 24px;
+      position: relative;
+      transition: transform 0.2s, border-color 0.2s;
+      cursor: default;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 4px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--brown-mid);
+    }
+
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      width: 56px; height: 56px;
+      margin-bottom: 20px;
+      image-rendering: pixelated;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Pixel art icons using CSS */
+    .icon-ticket {
+      background: var(--gold);
+      width: 48px; height: 48px;
+      clip-path: polygon(0 20%, 20% 20%, 20% 0, 80% 0, 80% 20%, 100% 20%, 100% 80%, 80% 80%, 80% 100%, 20% 100%, 20% 80%, 0 80%);
+      box-shadow: 0 0 12px rgba(245,212,121,0.5);
+    }
+
+    .icon-rank {
+      width: 48px; height: 48px;
+      background: var(--red-light);
+      clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+      box-shadow: 0 0 12px rgba(224,85,85,0.5);
+    }
+
+    .icon-course {
+      width: 48px; height: 12px;
+      background: var(--brown-light);
+      position: relative;
+      box-shadow: 0 0 12px rgba(196,132,90,0.5);
+      margin-top: 18px;
+    }
+
+    .icon-course::before, .icon-course::after {
+      content: '';
+      position: absolute;
+      width: 12px; height: 24px;
+      background: var(--brown-light);
+      bottom: 0;
+    }
+
+    .icon-course::before { left: 0; }
+    .icon-course::after  { right: 0; }
+
+    .icon-battle {
+      width: 44px; height: 44px;
+      background: var(--red-bright);
+      clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
+      box-shadow: 0 0 12px rgba(255,112,112,0.5);
+    }
+
+    .feature-card h3 {
+      font-size: 0.65rem;
+      color: var(--gold);
+      margin-bottom: 14px;
+      letter-spacing: 1px;
+    }
+
+    .feature-card p {
+      font-family: 'VT323', monospace;
+      font-size: 1.2rem;
+      color: #aaa;
+      line-height: 1.7;
+    }
+
+    .feature-tag {
+      display: inline-block;
+      margin-top: 16px;
+      font-size: 0.35rem;
+      background: var(--red-dark);
+      color: var(--red-bright);
+      padding: 6px 10px;
+      border: 2px solid var(--red-mid);
+      letter-spacing: 1px;
+    }
+
+    /* ---- ABOUT / HOW IT WORKS ---- */
+    #about {
+      padding: 80px 40px;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .about-grid { grid-template-columns: 1fr; }
+    }
+
+    .about-text p {
+      font-family: 'VT323', monospace;
+      font-size: 1.3rem;
+      color: #aaa;
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    .about-text p strong {
+      color: var(--gold);
+    }
+
+    /* Pixel art server visual */
+    .server-visual {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 4px;
+      padding: 24px;
+      background: var(--bg2);
+      border: 4px solid var(--brown-dark);
+    }
+
+    .pixel-block {
+      aspect-ratio: 1;
+      animation: blockPulse 4s ease-in-out infinite;
+    }
+
+    @keyframes blockPulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.7; }
+    }
+
+    /* ---- RANKS ---- */
+    #ranks {
+      background: var(--bg2);
+      max-width: 100%;
+      padding: 80px 40px;
+    }
+
+    #ranks .inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .ranks-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .rank-badge {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.5rem;
+      padding: 12px 20px;
+      border: 3px solid;
+      letter-spacing: 2px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+
+    .rank-badge:hover { transform: scale(1.05); }
+
+    .rank-badge::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+    }
+
+    .rank-noob     { color: #C4845A; border-color: #8B5E3C; background: rgba(92,58,30,0.3); }
+    .rank-pro      { color: #D8D8D8; border-color: #A0A0A0; background: rgba(80,80,80,0.3); }
+    .rank-master   { color: #F5D479; border-color: #C8A030; background: rgba(92,68,0,0.3); text-shadow: 0 0 6px rgba(245,212,121,0.5); }
+    .rank-legend   { color: #C060FF; border-color: #8030C0; background: rgba(40,10,80,0.3); }
+    .rank-captain  { color: #FF6868; border-color: #C03030; background: rgba(80,10,10,0.35); }
+    .rank-champion { color: #6FF0FF; border-color: #00B8D4; background: rgba(0,80,100,0.3); text-shadow: 0 0 8px rgba(111,240,255,0.6); }
+
+    .ranks-desc {
+      font-family: 'VT323', monospace;
+      font-size: 1.2rem;
+      color: var(--gray);
+      margin-top: 24px;
+      line-height: 1.7;
+    }
+
+    /* ---- LEADERBOARD TEASER ---- */
+    #leaderboard {
+      padding: 80px 40px;
+    }
+
+    .leaderboard-table {
+      width: 100%;
+      max-width: 700px;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+
+    .leaderboard-table thead tr {
+      background: var(--brown-dark);
+    }
+
+    .leaderboard-table th {
+      font-size: 0.4rem;
+      color: var(--gold);
+      padding: 14px 20px;
+      text-align: left;
+      letter-spacing: 1px;
+      border-bottom: 3px solid var(--brown-mid);
+    }
+
+    .leaderboard-table td {
+      font-family: 'VT323', monospace;
+      font-size: 1.2rem;
+      padding: 12px 20px;
+      border-bottom: 2px solid var(--brown-dark);
+      color: #ccc;
+    }
+
+    .leaderboard-table tr:nth-child(1) td { color: var(--gold); }
+    .leaderboard-table tr:nth-child(2) td { color: #C8C8C8; }
+    .leaderboard-table tr:nth-child(3) td { color: #C4845A; }
+
+    .rank-num {
+      display: inline-block;
+      width: 24px; height: 24px;
+      text-align: center;
+      line-height: 24px;
+      background: var(--brown-dark);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.45rem;
+    }
+
+    .trophy { color: var(--gold); }
+    .trophy2 { color: #C8C8C8; }
+    .trophy3 { color: #C4845A; }
+
+    /* ---- CTA ---- */
+    #cta {
+      background:
+        radial-gradient(ellipse 90% 70% at 50% 50%, rgba(92,26,26,0.3) 0%, transparent 70%),
+        var(--bg2);
+      max-width: 100%;
+      padding: 100px 40px;
+      text-align: center;
+    }
+
+    #cta .inner {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .cta-title {
+      font-size: clamp(1.2rem, 4vw, 2.2rem);
+      color: var(--gold);
+      text-shadow: 4px 4px 0 var(--brown-dark), 0 0 40px rgba(245,212,121,0.3);
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .cta-sub {
+      font-family: 'VT323', monospace;
+      font-size: 1.4rem;
+      color: var(--gray);
+      margin-bottom: 40px;
+      line-height: 1.7;
+    }
+
+    .ip-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .ip-label {
+      font-size: 0.4rem;
+      background: var(--brown-dark);
+      color: var(--brown-light);
+      padding: 14px 18px;
+      border: 3px solid var(--brown-mid);
+      border-right: none;
+      letter-spacing: 2px;
+    }
+
+    .ip-value {
+      font-size: 0.7rem;
+      background: var(--bg);
+      color: var(--gold);
+      padding: 14px 24px;
+      border: 3px solid var(--brown-mid);
+      letter-spacing: 3px;
+      cursor: pointer;
+      transition: background 0.2s;
+      user-select: all;
+    }
+
+    .ip-value:hover { background: var(--brown-dark); }
+
+    .ip-copy {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.4rem;
+      background: var(--brown-mid);
+      color: var(--white);
+      padding: 14px 16px;
+      border: 3px solid var(--brown-mid);
+      border-left: none;
+      cursor: pointer;
+      transition: background 0.2s;
+      letter-spacing: 1px;
+    }
+
+    .ip-copy:hover { background: var(--brown-light); }
+
+    /* ---- FOOTER ---- */
+    footer {
+      background: var(--bg2);
+      border-top: 4px solid var(--brown-dark);
+      padding: 40px;
+      text-align: center;
+    }
+
+    footer .footer-logo {
+      margin-bottom: 16px;
+    }
+
+    footer .footer-logo .top {
+      font-size: 0.7rem;
+      color: var(--gold);
+      text-shadow: 2px 2px 0 var(--brown-dark);
+    }
+
+    footer .footer-logo .bot {
+      font-size: 0.5rem;
+      color: var(--red-light);
+      text-shadow: 1px 1px 0 var(--red-dark);
+      margin-top: 4px;
+    }
+
+    footer p {
+      font-family: 'VT323', monospace;
+      font-size: 1rem;
+      color: var(--gray);
+      margin-top: 12px;
+    }
+
+    /* ---- TOAST ---- */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--brown-mid);
+      color: var(--white);
+      font-size: 0.5rem;
+      padding: 14px 28px;
+      border: 3px solid var(--gold);
+      transition: transform 0.3s;
+      z-index: 999;
+      letter-spacing: 1px;
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 600px) {
+      nav ul { display: none; }
+      .logo-evbm  { font-size: 2.5rem; }
+      .logo-pkciv { font-size: 1.8rem; }
+      section, #features, #ranks, #cta, #leaderboard, #about {
+        padding: 60px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <span class="top">EVBM</span>
+    <span class="bot">PK CIV</span>
+  </div>
+  <ul>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#ranks">Ranks</a></li>
+
+    <li><a href="#cta">Join</a></li>
+  </ul>
+  <div class="nav-ip" onclick="copyIP()">COPY IP</div>
+</nav>
+
+<!-- HERO -->
+<div id="hero">
+  <!-- Particles -->
+  <div class="particle" style="left:10%; animation-delay:0s; animation-duration:7s;"></div>
+  <div class="particle" style="left:25%; animation-delay:1s; animation-duration:5s; background: var(--red-light);"></div>
+  <div class="particle" style="left:40%; animation-delay:2s; animation-duration:8s;"></div>
+  <div class="particle" style="left:60%; animation-delay:0.5s; animation-duration:6s; background: var(--red-bright);"></div>
+  <div class="particle" style="left:75%; animation-delay:3s; animation-duration:7s;"></div>
+  <div class="particle" style="left:88%; animation-delay:1.5s; animation-duration:5.5s; background: var(--brown-light);"></div>
+  <div class="particle" style="left:50%; animation-delay:4s; animation-duration:9s;"></div>
+  <div class="particle" style="left:15%; animation-delay:2.5s; animation-duration:6.5s; background: var(--red-light);"></div>
+
+  <div class="hero-logo">
+    <img src="logo_transparent.png" alt="EVBM PK CIV" style="max-width: min(520px, 85vw); width: 100%; image-rendering: pixelated; animation: logoFloat 3s ease-in-out infinite;" />
+  </div>
+
+  <p class="hero-tagline">
+    Run. Earn. <span>Battle.</span> Conquer.<br />
+    Evbo's Parkour Civilization — reborn.
+  </p>
+
+  <div class="hero-buttons">
+    <a href="#cta" class="btn-primary">JOIN NOW</a>
+    <a href="#features" class="btn-secondary">LEARN MORE</a>
+  </div>
+
+  <div class="scroll-hint">▼ SCROLL DOWN ▼</div>
+</div>
+
+<!-- FEATURES -->
+<div id="features">
+  <div class="inner">
+    <div class="section-label">// GAMEPLAY</div>
+    <h2 class="section-title">WHAT AWAITS YOU</h2>
+    <p class="section-sub">Four pillars. One civilization. Your legacy starts here.</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><div class="icon-ticket"></div></div>
+        <h3>EARN TICKETS</h3>
+        <p>Complete parkour courses, beat challenges, and rack up tickets. The more you run, the more you earn. Tickets are the lifeblood of the civilization — spend them wisely.</p>
+        <span class="feature-tag">TICKET ECONOMY</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><div class="icon-rank"></div></div>
+        <h3>RANK UP</h3>
+        <p>Start as a newcomer and grind your way to legend. Each rank unlocks new areas and exclusive perks. The climb is the game.</p>
+        <span class="feature-tag">PRESTIGE SYSTEM</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><div class="icon-course"></div></div>
+        <h3>PARKOUR COURSES</h3>
+        <p>Dozens of hand-crafted courses from beginner to expert. Complete them to earn tickets and unlock new challenges. Every jump matters.</p>
+        <span class="feature-tag">60+ COURSES</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon"><div class="icon-battle"></div></div>
+        <h3>BATTLE OTHERS</h3>
+        <p>Go head-to-head in parkour battles and put your tickets on the line. Race your rivals through courses, climb the battle ladder, and prove who truly rules the civilization.</p>
+        <span class="feature-tag">PARKOUR BATTLE</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-grid">
+    <div class="about-text">
+      <div class="section-label">// ABOUT</div>
+      <h2 class="section-title">BUILT ON<br />EVBO'S VISION</h2>
+      <p>EVBM PK CIV is inspired by <strong>Evbo's legendary Parkour Civilization</strong> series. We took everything that made it great and built a full multiplayer experience around it.</p>
+      <p>Every system — tickets, ranks, courses, battles — is designed to keep you engaged and coming back. <strong>Progress never resets.</strong> Your grind is permanent.</p>
+      <p>Whether you're here to speed-run courses or dominate in parkour battles, there's a path for you. <strong>The civilization grows with every player.</strong></p>
+    </div>
+    <div style="display:flex; flex-direction:row; flex-wrap:wrap; align-items:center; justify-content:center; gap:28px;">
+      <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+        <img src="https://minotar.net/helm/evbo_/160" alt="evbo_" style="width:160px; height:160px; image-rendering: pixelated; border: 4px solid var(--brown-mid); box-shadow: 0 0 20px rgba(245,212,121,0.2);" />
+        <span style="font-size:0.4rem; color:var(--gold); letter-spacing:2px;">evbo_</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RANKS -->
+<div id="ranks">
+  <div class="inner">
+    <div class="section-label">// PROGRESSION</div>
+    <h2 class="section-title">RANK UP THE LADDER</h2>
+    <p class="section-sub">Every ticket earned pushes you closer to the top. Where do you stand?</p>
+
+    <div class="ranks-row">
+      <div class="rank-badge rank-noob">NOOB</div>
+      <div class="rank-badge rank-pro">PRO</div>
+      <div class="rank-badge rank-master">MASTER</div>
+      <div class="rank-badge rank-legend">LEGEND</div>
+      <div class="rank-badge rank-captain">CAPTAIN</div>
+      <div class="rank-badge rank-champion">CHAMPION</div>
+    </div>
+    <p class="ranks-desc">
+      Every rank you earn unlocks new areas to explore and fresh perks to enjoy. The higher you climb, the more the civilization opens up. The grind is real — and so are the rewards.
+    </p>
+  </div>
+</div>
+
+
+<!-- CTA -->
+<div id="cta">
+  <div class="inner">
+    <h2 class="cta-title">READY TO JOIN<br />THE CIVILIZATION?</h2>
+    <p class="cta-sub">
+      Thousands of players are already running, earning, and battling.<br />
+      Your civilization awaits. Copy the IP and log in now.
+    </p>
+
+    <div class="ip-box">
+      <div class="ip-label">SERVER IP</div>
+      <div class="ip-value" id="serverIP" onclick="copyIP()">evbm.minehut.gg</div>
+      <div class="ip-copy" onclick="copyIP()">COPY</div>
+    </div>
+
+    <br />
+    <a href="#features" class="btn-primary">EXPLORE FEATURES</a>
+    <div style="display:flex; flex-direction:row; gap:32px; justify-content:center; margin-top:40px;">
+      <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+        <img src="https://minotar.net/helm/em24431/140" alt="em24431" style="width:140px; height:140px; image-rendering: pixelated; border: 4px solid var(--brown-mid); box-shadow: 0 0 20px rgba(245,212,121,0.2);" />
+        <span style="font-size:0.4rem; color:var(--gold); letter-spacing:2px;">em24431</span>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+        <img src="https://minotar.net/helm/wafflesMC_/140" alt="wafflesMC_" style="width:140px; height:140px; image-rendering: pixelated; border: 4px solid var(--red-mid); box-shadow: 0 0 20px rgba(224,85,85,0.2);" />
+        <span style="font-size:0.4rem; color:var(--red-bright); letter-spacing:2px;">wafflesMC_</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <div class="top">EVBM</div>
+    <div class="bot">PK CIV</div>
+  </div>
+  <p>Not affiliated with Mojang AB. Minecraft is a trademark of Mojang AB.</p>
+  <p style="margin-top:8px;">Inspired by Evbo's Parkour Civilization series.</p>
+</footer>
+
+<!-- TOAST -->
+<div class="toast" id="toast">IP COPIED TO CLIPBOARD!</div>
+
+<script>
+  // ---- Copy IP ----
+  function copyIP() {
+    const ip = document.getElementById('serverIP').textContent;
+    navigator.clipboard.writeText(ip).catch(() => {});
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+  }
+
+  // ---- Pixel Art Grid ----
+  const colors = [
+    '#5C3A1E','#8B5E3C','#C4845A','#5C1A1A','#B83232',
+    '#E05555','#3A3020','#6B5530','#1a1a1e','#141418',
+    '#2A1A0E','#7A4020','#D4A017','#3D1A1A','#4A2A2A',
+  ];
+
+  const grid = document.getElementById('pixelGrid');
+  for (let i = 0; i < 64; i++) {
+    const block = document.createElement('div');
+    block.className = 'pixel-block';
+    block.style.background = colors[Math.floor(Math.random() * colors.length)];
+    block.style.animationDelay = (Math.random() * 4) + 's';
+    block.style.animationDuration = (3 + Math.random() * 4) + 's';
+    grid.appendChild(block);
+  }
+
+  // ---- Scroll animations ----
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.feature-card, .rank-badge, .leaderboard-table tr').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>

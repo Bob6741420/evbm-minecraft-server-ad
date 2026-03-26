@@ -1198,91 +1198,99 @@
   const canvas = document.getElementById('bg-canvas');
   const ctx = canvas.getContext('2d');
 
-  const BLOCK_COLORS = [
-    '#5C3A1E','#8B5E3C','#C4845A',
-    '#5C1A1A','#B83232','#E05555',
-    '#F5D479','#3A3020','#2A1A0E',
-  ];
+  // ---- Fire particle system ----
+  const NUM_FIRES = 6; // fire sources spread across bottom
+  const PARTICLES_PER_FIRE = 30;
 
-  // Drifting pixel blocks
-  const blocks = Array.from({length: 60}, () => ({
-    x: Math.random(),
-    y: Math.random(),
-    size: 6 + Math.floor(Math.random() * 3) * 4, // 6, 10, or 14px
-    color: BLOCK_COLORS[Math.floor(Math.random() * BLOCK_COLORS.length)],
-    vx: (Math.random() - 0.5) * 0.0003,
-    vy: -0.00008 - Math.random() * 0.00012,
-    alpha: 0.15 + Math.random() * 0.35,
-    rot: Math.random() * Math.PI * 2,
-    rotSpeed: (Math.random() - 0.5) * 0.005,
-  }));
-
-  // Matrix rain columns
-  const CHARS = '0123456789ABCDEF♦♠★↑→↓←';
-  const COL_W = 20;
-  let cols = [];
-
-  function initCols() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-    const numCols = Math.floor(canvas.width / COL_W);
-    cols = Array.from({length: numCols}, () => ({
-      y: Math.random() * -200,
-      speed: 0.4 + Math.random() * 0.8,
-      char: CHARS[Math.floor(Math.random() * CHARS.length)],
-      alpha: 0.04 + Math.random() * 0.06,
-      color: Math.random() > 0.5 ? '#F5D479' : '#B83232',
-    }));
+  function makeParticle(fireX, W, H) {
+    const life = 0.6 + Math.random() * 0.8;
+    return {
+      x: fireX + (Math.random() - 0.5) * 60,
+      y: H + 4,
+      vx: (Math.random() - 0.5) * 1.2,
+      vy: -(1.5 + Math.random() * 3.5),
+      life,
+      maxLife: life,
+      size: 4 + Math.floor(Math.random() * 3) * 4, // 4, 8, or 12px (pixel sizes)
+      wobble: (Math.random() - 0.5) * 0.04,
+    };
   }
 
-  initCols();
-  window.addEventListener('resize', initCols);
+  let W = window.innerWidth;
+  let H = window.innerHeight;
+  canvas.width = W;
+  canvas.height = H;
 
-  function draw(ts) {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Evenly space fire sources
+  const fireXs = Array.from({length: NUM_FIRES}, (_, i) =>
+    (W / (NUM_FIRES + 1)) * (i + 1)
+  );
 
-    const W = canvas.width;
-    const H = canvas.height;
+  let particles = [];
+  fireXs.forEach(fx => {
+    for (let i = 0; i < PARTICLES_PER_FIRE; i++) {
+      const p = makeParticle(fx, W, H);
+      // Stagger starting life so they don't all appear at once
+      p.life = Math.random() * p.maxLife;
+      p.y = H - (1 - p.life / p.maxLife) * H * 0.7;
+      particles.push({...p, fireX: fx});
+    }
+  });
 
-    // Draw matrix rain
-    ctx.font = `bold ${COL_W * 0.7}px monospace`;
-    cols.forEach((col, i) => {
-      ctx.globalAlpha = col.alpha;
-      ctx.fillStyle = col.color;
-      ctx.fillText(col.char, i * COL_W, col.y);
-      col.y += col.speed;
-      if (col.y > H + 20) {
-        col.y = -20;
-        col.char = CHARS[Math.floor(Math.random() * CHARS.length)];
-      }
+  window.addEventListener('resize', () => {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W;
+    canvas.height = H;
+    fireXs.forEach((_, i) => {
+      fireXs[i] = (W / (NUM_FIRES + 1)) * (i + 1);
     });
+  });
 
-    // Draw drifting pixel blocks
-    blocks.forEach(b => {
-      const px = b.x * W;
-      const py = b.y * H;
+  function fireColor(t) {
+    // t = 0 (birth, bottom) → 1 (death, top)
+    // bottom: bright white-yellow → orange → red → dark red/transparent
+    if (t < 0.2) {
+      // white-yellow core
+      const r = 255, g = Math.floor(255 - t * 5 * 100), b = Math.floor(200 - t * 5 * 200);
+      return [r, Math.max(g,150), Math.max(b,0)];
+    } else if (t < 0.5) {
+      const s = (t - 0.2) / 0.3;
+      const r = 255, g = Math.floor(150 - s * 120), b = 0;
+      return [r, Math.max(g, 30), b];
+    } else {
+      const s = (t - 0.5) / 0.5;
+      const r = Math.floor(255 - s * 130), g = Math.floor(30 - s * 30), b = 0;
+      return [Math.max(r, 60), Math.max(g, 0), 0];
+    }
+  }
 
-      ctx.save();
-      ctx.globalAlpha = b.alpha;
-      ctx.translate(px, py);
-      ctx.rotate(b.rot);
-      ctx.fillStyle = b.color;
-      ctx.fillRect(-b.size / 2, -b.size / 2, b.size, b.size);
-      // pixel inner highlight
-      ctx.globalAlpha = b.alpha * 0.5;
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(-b.size / 2, -b.size / 2, b.size * 0.4, b.size * 0.4);
-      ctx.restore();
+  function draw() {
+    canvas.width = W;
+    canvas.height = H;
+    ctx.clearRect(0, 0, W, H);
 
-      b.x += b.vx;
-      b.y += b.vy;
-      b.rot += b.rotSpeed;
+    particles.forEach((p, idx) => {
+      const t = 1 - (p.life / p.maxLife); // 0=new, 1=dead
+      const alpha = t < 0.1 ? t * 10 * 0.6 : (1 - t) * 0.6;
+      const [r, g, b] = fireColor(t);
 
-      if (b.y < -0.05) b.y = 1.05;
-      if (b.x < -0.05) b.x = 1.05;
-      if (b.x > 1.05)  b.x = -0.05;
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = `rgb(${r},${g},${b})`;
+      // pixel-snapped position
+      const px = Math.round(p.x / 4) * 4;
+      const py = Math.round(p.y / 4) * 4;
+      ctx.fillRect(px - p.size / 2, py - p.size / 2, p.size, p.size);
+
+      // update
+      p.vx += p.wobble;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.life -= 0.016;
+
+      if (p.life <= 0) {
+        particles[idx] = {...makeParticle(p.fireX, W, H), fireX: p.fireX};
+      }
     });
 
     ctx.globalAlpha = 1;

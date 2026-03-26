@@ -1153,6 +1153,56 @@
       pointer-events: none;
     }
 
+    /* ---- ACTIVITY FEED ---- */
+    .activity-feed {
+      position: fixed;
+      bottom: 80px;
+      left: 20px;
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      pointer-events: none;
+      width: 290px;
+    }
+
+    .activity-msg {
+      background: rgba(14,14,18,0.93);
+      border: 2px solid var(--brown-dark);
+      border-left: 5px solid var(--gold);
+      padding: 8px 12px;
+      font-family: 'VT323', monospace;
+      font-size: 1.05rem;
+      color: var(--white);
+      box-shadow: 4px 4px 0 rgba(0,0,0,0.6);
+      animation: activitySlide 0.3s ease-out;
+      transition: opacity 0.5s;
+    }
+
+    .activity-msg.red  { border-left-color: var(--red-bright); }
+    .activity-msg.cyan { border-left-color: #6FF0FF; }
+    .activity-msg.purple { border-left-color: #C060FF; }
+
+    @keyframes activitySlide {
+      from { transform: translateX(-16px); opacity: 0; }
+      to   { transform: translateX(0); opacity: 1; }
+    }
+
+    /* ---- MC TIP ---- */
+    .mc-tip {
+      font-family: 'VT323', monospace;
+      font-size: 1.1rem;
+      color: var(--gray);
+      margin-top: 14px;
+      letter-spacing: 1px;
+      min-height: 1.4rem;
+      transition: opacity 0.4s;
+      z-index: 1;
+      position: relative;
+    }
+
+    .mc-tip .tip-key { color: var(--gold); }
+
     /* ---- CHAMPION PULSE ---- */
     .rank-champion {
       animation: championPulse 2s ease-in-out infinite;
@@ -1226,6 +1276,8 @@
       <span class="stat-label">PLAYERS ONLINE</span>
     </div>
   </div>
+
+  <p class="mc-tip" id="mc-tip"></p>
 
   <div class="scroll-hint">▼ SCROLL DOWN ▼</div>
 
@@ -1479,6 +1531,9 @@
 <!-- TOAST -->
 <div class="toast" id="toast">IP COPIED TO CLIPBOARD!</div>
 
+<!-- ACTIVITY FEED -->
+<div class="activity-feed" id="activity-feed"></div>
+
 <!-- ACHIEVEMENT -->
 <div class="achievement" id="achievement">
   <div class="ach-icon">🏆</div>
@@ -1489,6 +1544,93 @@
 </div>
 
 <script>
+  // ---- 8-bit pixel sounds ----
+  let audioCtx = null;
+  function playPixelSound(freq, dur, type = 'square') {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+      osc.start(audioCtx.currentTime);
+      osc.stop(audioCtx.currentTime + dur);
+    } catch(e) {}
+  }
+  document.addEventListener('click', () => playPixelSound(520, 0.07));
+  document.querySelectorAll('.btn-primary, .btn-secondary, .rank-badge, .nav-ip, .perk-card').forEach(el => {
+    el.addEventListener('mouseenter', () => playPixelSound(660, 0.04));
+  });
+
+  // ---- Rank badge click — rank-up sound ----
+  document.querySelectorAll('.rank-badge').forEach(el => {
+    el.addEventListener('click', () => {
+      playPixelSound(880, 0.05);
+      setTimeout(() => playPixelSound(1100, 0.05), 80);
+      setTimeout(() => playPixelSound(1320, 0.1), 160);
+    });
+  });
+
+  // ---- Live activity feed ----
+  const activityEvents = [
+    { msg: '🏃 NoobRunner99 just logged in!',          type: 'gold' },
+    { msg: '⚔ em24431 challenged Steve to a battle!',  type: 'red' },
+    { msg: '🏆 xVoid ranked up to MASTER!',            type: 'gold' },
+    { msg: '💀 PixelBoy was sent to prison!',          type: 'red' },
+    { msg: '🔑 JumpKing found a key!',                 type: 'gold' },
+    { msg: '🎫 SpeedDemon got a ticket!',              type: 'gold' },
+    { msg: '👑 CraftLord became CAPTAIN!',             type: 'cyan' },
+    { msg: '⚡ wafflesMC_ started a parkour battle!',  type: 'red' },
+    { msg: '🎯 Rocketfeet completed a course!',        type: 'gold' },
+    { msg: '💀 MasterFalls ranked down to Pro!',       type: 'red' },
+    { msg: '🌟 evbo_ is watching...',                  type: 'cyan' },
+    { msg: '🔑 BlockRunner found a key!',              type: 'gold' },
+    { msg: '🏅 ZeroGravity ranked up to LEGEND!',      type: 'purple' },
+    { msg: '⚔ Noob420 lost a battle!',                type: 'red' },
+    { msg: '👑 IronFist beat a Captain!',              type: 'cyan' },
+  ];
+  const feedEl = document.getElementById('activity-feed');
+  let aIdx = Math.floor(Math.random() * activityEvents.length);
+  function showActivity() {
+    const ev = activityEvents[aIdx % activityEvents.length];
+    aIdx++;
+    const el = document.createElement('div');
+    el.className = `activity-msg ${ev.type}`;
+    el.textContent = ev.msg;
+    feedEl.appendChild(el);
+    if (feedEl.children.length > 4) feedEl.removeChild(feedEl.firstChild);
+    setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 500); }, 4500);
+    setTimeout(showActivity, 2200 + Math.random() * 2000);
+  }
+  setTimeout(showActivity, 2500);
+
+  // ---- Cycling Minecraft tips ----
+  const mcTips = [
+    '<span class="tip-key">Tip:</span> Collect a ticket AND a key to attempt a rank-up!',
+    '<span class="tip-key">Tip:</span> As a Noob, death sends you to prison.',
+    '<span class="tip-key">Tip:</span> Beat a Captain in a battle to become one!',
+    '<span class="tip-key">Tip:</span> Legend rank? Death no longer sets you back!',
+    '<span class="tip-key">Tip:</span> Champions can promote and demote players.',
+    '<span class="tip-key">Tip:</span> /steak and /ticket commands unlock at Pro rank.',
+    '<span class="tip-key">Tip:</span> Masters can enter Legend Temples for free.',
+    '<span class="tip-key">Tip:</span> Captains must meet their weekly battle quota!',
+  ];
+  const tipEl = document.getElementById('mc-tip');
+  let tipIdx = 0;
+  function cycleTip() {
+    tipEl.style.opacity = '0';
+    setTimeout(() => {
+      tipEl.innerHTML = mcTips[tipIdx % mcTips.length];
+      tipEl.style.opacity = '1';
+      tipIdx++;
+    }, 400);
+    setTimeout(cycleTip, 5000);
+  }
+  setTimeout(cycleTip, 1000);
+
   // ---- Achievement toast on load ----
   setTimeout(() => {
     const ach = document.getElementById('achievement');

@@ -372,8 +372,23 @@
       border: 4px solid var(--brown-dark);
       padding: 32px 24px;
       position: relative;
-      transition: transform 0.2s, border-color 0.2s;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
       cursor: default;
+      box-shadow:
+        inset 3px 3px 0 rgba(255,255,255,0.07),
+        inset -3px -3px 0 rgba(0,0,0,0.45),
+        0 0 0 1px rgba(0,0,0,0.7),
+        6px 6px 0 rgba(0,0,0,0.5);
+    }
+
+    .feature-card::after {
+      content: '';
+      position: absolute;
+      bottom: 5px; right: 5px;
+      width: 10px; height: 10px;
+      border-bottom: 2px solid rgba(0,0,0,0.5);
+      border-right: 2px solid rgba(0,0,0,0.5);
+      pointer-events: none;
     }
 
     .feature-card::before {
@@ -539,14 +554,26 @@
       font-family: 'Press Start 2P', monospace;
       font-size: 0.5rem;
       padding: 12px 20px;
-      border: 3px solid;
+      border: 4px solid;
       letter-spacing: 2px;
       position: relative;
       overflow: hidden;
-      transition: transform 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow:
+        inset 3px 3px 0 rgba(255,255,255,0.15),
+        inset -3px -3px 0 rgba(0,0,0,0.5),
+        0 0 0 1px rgba(0,0,0,0.7),
+        4px 4px 0 rgba(0,0,0,0.5);
     }
 
-    .rank-badge:hover { transform: scale(1.05); }
+    .rank-badge:hover {
+      transform: scale(1.05);
+      box-shadow:
+        inset 3px 3px 0 rgba(255,255,255,0.2),
+        inset -3px -3px 0 rgba(0,0,0,0.5),
+        0 0 0 1px rgba(0,0,0,0.7),
+        6px 6px 0 rgba(0,0,0,0.5);
+    }
 
     .rank-badge::after {
       content: '';
@@ -892,13 +919,42 @@
 
     .perk-card {
       background: var(--bg);
-      border: 3px solid var(--brown-dark);
+      border: 4px solid var(--brown-dark);
       padding: 20px 16px;
       position: relative;
-      transition: transform 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow:
+        inset 3px 3px 0 rgba(255,255,255,0.07),
+        inset -3px -3px 0 rgba(0,0,0,0.45),
+        0 0 0 1px rgba(0,0,0,0.7),
+        6px 6px 0 rgba(0,0,0,0.5);
     }
 
-    .perk-card:hover { transform: translateY(-4px); }
+    .perk-card::before, .perk-card::after {
+      content: '';
+      position: absolute;
+      width: 10px; height: 10px;
+      pointer-events: none;
+    }
+    .perk-card::before {
+      top: 5px; left: 5px;
+      border-top: 2px solid rgba(255,255,255,0.2);
+      border-left: 2px solid rgba(255,255,255,0.2);
+    }
+    .perk-card::after {
+      bottom: 5px; right: 5px;
+      border-bottom: 2px solid rgba(0,0,0,0.6);
+      border-right: 2px solid rgba(0,0,0,0.6);
+    }
+
+    .perk-card:hover {
+      transform: translateY(-4px);
+      box-shadow:
+        inset 3px 3px 0 rgba(255,255,255,0.1),
+        inset -3px -3px 0 rgba(0,0,0,0.45),
+        0 0 0 1px rgba(0,0,0,0.7),
+        8px 8px 0 rgba(0,0,0,0.5);
+    }
 
     .perk-rank-label {
       font-size: 0.45rem;
@@ -950,14 +1006,26 @@
     }
 
     .faq-item {
-      border: 3px solid var(--brown-dark);
+      border: 4px solid var(--brown-dark);
       background: var(--bg2);
       overflow: hidden;
       cursor: pointer;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      box-shadow:
+        inset 3px 3px 0 rgba(255,255,255,0.06),
+        inset -3px -3px 0 rgba(0,0,0,0.4),
+        0 0 0 1px rgba(0,0,0,0.7),
+        5px 5px 0 rgba(0,0,0,0.4);
     }
 
-    .faq-item:hover { border-color: var(--brown-mid); }
+    .faq-item:hover {
+      border-color: var(--brown-mid);
+      box-shadow:
+        inset 3px 3px 0 rgba(255,255,255,0.08),
+        inset -3px -3px 0 rgba(0,0,0,0.4),
+        0 0 0 1px rgba(0,0,0,0.7),
+        6px 6px 0 rgba(0,0,0,0.5);
+    }
 
     .faq-q {
       font-size: 0.5rem;
@@ -1011,12 +1079,31 @@
       padding: 28px 20px;
       text-align: center;
       position: relative;
-      transition: border-color 0.2s, transform 0.2s;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow:
+        inset 3px 3px 0 rgba(255,255,255,0.07),
+        inset -3px -3px 0 rgba(0,0,0,0.45),
+        0 0 0 1px rgba(0,0,0,0.7),
+        6px 6px 0 rgba(0,0,0,0.5);
     }
+
+    .how-step::before, .how-step::after {
+      content: '';
+      position: absolute;
+      width: 10px; height: 10px;
+      pointer-events: none;
+    }
+    .how-step::before { top: 5px; left: 5px; border-top: 2px solid rgba(255,255,255,0.15); border-left: 2px solid rgba(255,255,255,0.15); }
+    .how-step::after  { bottom: 5px; right: 5px; border-bottom: 2px solid rgba(0,0,0,0.5); border-right: 2px solid rgba(0,0,0,0.5); }
 
     .how-step:hover {
       border-color: var(--gold);
       transform: translateY(-4px);
+      box-shadow:
+        inset 3px 3px 0 rgba(255,255,255,0.1),
+        inset -3px -3px 0 rgba(0,0,0,0.45),
+        0 0 0 1px rgba(0,0,0,0.7),
+        8px 8px 0 rgba(0,0,0,0.5);
     }
 
     .step-num {

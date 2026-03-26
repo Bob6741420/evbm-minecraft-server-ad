@@ -871,11 +871,11 @@
     #hero-fire-canvas {
       display: block;
       width: 100%;
-      height: 200px;
-      margin-top: -200px;
+      height: 160px;
       position: relative;
       z-index: 10;
       pointer-events: none;
+      background: transparent;
     }
 
     /* ---- CHAMPION PULSE ---- */
@@ -1228,43 +1228,53 @@
   const CELL = 8;
   let fCols, fRows, fGrid, fNext;
 
+  const FIRE_H = 160;
+
   function initFire() {
     fireCanvas.width  = window.innerWidth;
-    fireCanvas.height = 200;
+    fireCanvas.height = FIRE_H;
     fCols = Math.ceil(fireCanvas.width / CELL);
-    fRows = Math.ceil(200 / CELL);
+    fRows = Math.ceil(FIRE_H / CELL);
     fGrid = new Float32Array(fCols * fRows).fill(0);
     fNext = new Float32Array(fCols * fRows).fill(0);
-    for (let x = 0; x < fCols; x++) fGrid[(fRows - 1) * fCols + x] = 1;
+    // seed bottom two rows at full heat
+    for (let x = 0; x < fCols; x++) {
+      fGrid[(fRows - 1) * fCols + x] = 1;
+      fGrid[(fRows - 2) * fCols + x] = 1;
+    }
   }
 
   function stepFire() {
-    for (let x = 0; x < fCols; x++)
-      fGrid[(fRows - 1) * fCols + x] = 0.85 + Math.random() * 0.15;
-    for (let y = 0; y < fRows - 1; y++) {
+    // keep bottom two rows blazing
+    for (let x = 0; x < fCols; x++) {
+      fGrid[(fRows - 1) * fCols + x] = 0.9 + Math.random() * 0.1;
+      fGrid[(fRows - 2) * fCols + x] = 0.8 + Math.random() * 0.2;
+    }
+    for (let y = 0; y < fRows - 2; y++) {
       for (let x = 0; x < fCols; x++) {
         const b  = fGrid[(y + 1) * fCols + x];
         const bl = fGrid[(y + 1) * fCols + Math.max(x - 1, 0)];
         const br = fGrid[(y + 1) * fCols + Math.min(x + 1, fCols - 1)];
-        fNext[y * fCols + x] = Math.max(0, (b + bl + br) / 3 - 0.035 - Math.random() * 0.02);
+        // slower cooling so fire reaches higher
+        fNext[y * fCols + x] = Math.max(0, (b + bl + br) / 3 - 0.02 - Math.random() * 0.015);
       }
     }
     [fGrid, fNext] = [fNext, fGrid];
   }
 
   function drawFire() {
-    fctx.clearRect(0, 0, fireCanvas.width, 200);
+    fctx.clearRect(0, 0, fireCanvas.width, FIRE_H);
     for (let y = 0; y < fRows; y++) {
       for (let x = 0; x < fCols; x++) {
         const v = fGrid[y * fCols + x];
-        if (v < 0.02) continue;
+        if (v < 0.01) continue;
         let r, g, b;
-        if      (v > 0.8) { r=255; g=255; b=Math.floor((v-0.8)*5*200); }
-        else if (v > 0.5) { r=255; g=Math.floor((v-0.5)*3.33*255); b=0; }
-        else if (v > 0.2) { r=255; g=0; b=0; }
-        else              { r=Math.floor(v*5*180); g=0; b=0; }
+        if      (v > 0.8) { r=255; g=220; b=Math.floor((v-0.8)*5*180); }
+        else if (v > 0.5) { r=255; g=Math.floor((v-0.5)*3.33*200); b=0; }
+        else if (v > 0.2) { r=255; g=Math.floor((v-0.2)*1.67*60); b=0; }
+        else              { r=Math.floor(v*5*220); g=0; b=0; }
         fctx.fillStyle = `rgb(${r},${g},${b})`;
-        fctx.globalAlpha = Math.min(v + 0.1, 1);
+        fctx.globalAlpha = Math.min(v * 1.2, 1);
         fctx.fillRect(x * CELL, y * CELL, CELL, CELL);
       }
     }
@@ -1288,11 +1298,16 @@
     return Array.from({length: NUM_FIRES}, (_, i) => (W / (NUM_FIRES + 1)) * (i + 1));
   }
 
-  function makeParticle(fireX, W, H) {
+  function getFireY() {
+    const hero = document.getElementById('hero');
+    return hero ? hero.getBoundingClientRect().bottom : window.innerHeight;
+  }
+
+  function makeParticle(fireX, W) {
     const life = 0.6 + Math.random() * 0.8;
     return {
       x: fireX + (Math.random() - 0.5) * 80,
-      y: H,
+      y: getFireY(),
       vx: (Math.random() - 0.5) * 1.2,
       vy: -(1.5 + Math.random() * 3.5),
       life,
@@ -1311,9 +1326,10 @@
   let particles = [];
   fireXs.forEach(fx => {
     for (let i = 0; i < PARTICLES_PER_FIRE; i++) {
-      const p = makeParticle(fx, W, H);
+      const p = makeParticle(fx, W);
+      const fireY = getFireY();
       p.life = Math.random() * p.maxLife;
-      p.y = H - (1 - p.life / p.maxLife) * H * 0.6;
+      p.y = fireY - (1 - p.life / p.maxLife) * fireY * 0.6;
       particles.push({...p, fireX: fx});
     }
   });
@@ -1368,7 +1384,7 @@
       p.life -= 0.016;
 
       if (p.life <= 0) {
-        particles[idx] = {...makeParticle(p.fireX, W, H), fireX: p.fireX};
+        particles[idx] = {...makeParticle(p.fireX, W), fireX: p.fireX};
       }
     });
 

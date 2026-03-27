@@ -491,19 +491,47 @@
     }
 
     .section-label {
-      font-size: 0.45rem;
-      color: var(--red-light);
+      font-size: 0.38rem;
+      color: var(--gold);
       letter-spacing: 4px;
       text-transform: uppercase;
-      margin-bottom: 12px;
+      margin-bottom: 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0.85;
+    }
+    .section-label::before {
+      content: '';
+      display: inline-block;
+      width: 18px;
+      height: 2px;
+      background: var(--gold);
+      box-shadow: 0 0 6px rgba(245,212,121,0.5);
+    }
+    .section-label::after {
+      content: '';
+      display: inline-block;
+      width: 18px;
+      height: 2px;
+      background: var(--gold);
+      box-shadow: 0 0 6px rgba(245,212,121,0.5);
     }
 
     .section-title {
       font-size: clamp(1rem, 3vw, 1.8rem);
       color: var(--gold);
-      text-shadow: 3px 3px 0 var(--brown-dark);
-      margin-bottom: 16px;
+      text-shadow: 3px 3px 0 var(--brown-dark), 0 0 30px rgba(245,212,121,0.12);
+      margin-bottom: 8px;
       line-height: 1.4;
+    }
+
+    .section-title-rule {
+      width: 56px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), rgba(245,212,121,0.1));
+      margin: 10px 0 18px;
+      box-shadow: 0 0 8px rgba(245,212,121,0.25);
     }
 
     .section-sub {
@@ -518,11 +546,11 @@
     /* ---- FEATURES ---- */
     #features {
       background:
-        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px),
-        radial-gradient(ellipse 70% 50% at 50% 50%, rgba(92,58,30,0.12) 0%, transparent 70%),
+        repeating-linear-gradient(0deg, transparent 0px, transparent 15px, rgba(92,58,30,0.055) 15px, rgba(92,58,30,0.055) 16px),
+        repeating-linear-gradient(90deg, transparent 0px, transparent 31px, rgba(92,58,30,0.035) 31px, rgba(92,58,30,0.035) 32px),
+        radial-gradient(ellipse 70% 50% at 50% 50%, rgba(92,58,30,0.14) 0%, transparent 70%),
         linear-gradient(180deg, var(--bg) 0%, #0d0d11 100%);
-      background-size: 16px 16px, 16px 16px, 100% 100%, 100% 100%;
+      background-size: 100% 16px, 32px 100%, 100% 100%, 100% 100%;
       max-width: 100%;
       padding: 80px 40px;
     }
@@ -544,42 +572,53 @@
     }
 
     .feature-card {
-      background: var(--bg);
-      border: 4px solid var(--brown-dark);
+      background:
+        repeating-linear-gradient(0deg, transparent 0px, transparent 7px, rgba(92,58,30,0.04) 7px, rgba(92,58,30,0.04) 8px),
+        linear-gradient(160deg, rgba(92,58,30,0.12) 0%, var(--bg) 60%);
+      border: 3px solid var(--brown-dark);
+      border-top: 3px solid var(--brown-mid);
       padding: 32px 24px;
       position: relative;
       transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
       cursor: default;
       box-shadow:
-        inset 3px 3px 0 rgba(255,255,255,0.07),
-        inset -3px -3px 0 rgba(0,0,0,0.45),
-        0 0 0 1px rgba(0,0,0,0.7),
-        6px 6px 0 rgba(0,0,0,0.5);
+        inset 2px 2px 0 rgba(196,132,90,0.08),
+        inset -2px -2px 0 rgba(0,0,0,0.5),
+        0 0 0 1px rgba(0,0,0,0.6),
+        6px 6px 0 rgba(0,0,0,0.45);
     }
 
-    .feature-card::after {
-      content: '';
-      position: absolute;
-      bottom: 5px; right: 5px;
-      width: 10px; height: 10px;
-      border-bottom: 2px solid rgba(0,0,0,0.5);
-      border-right: 2px solid rgba(0,0,0,0.5);
-      pointer-events: none;
-    }
-
+    /* Corner chisel marks */
     .feature-card::before {
       content: '';
       position: absolute;
       top: 0; left: 0;
-      width: 100%; height: 4px;
+      width: 100%; height: 3px;
       background: linear-gradient(90deg, transparent, var(--gold), transparent);
       opacity: 0;
       transition: opacity 0.3s;
     }
 
+    .feature-card::after {
+      content: '';
+      position: absolute;
+      top: 5px; right: 5px;
+      width: 8px; height: 8px;
+      border-top: 2px solid var(--brown-mid);
+      border-right: 2px solid var(--brown-mid);
+      pointer-events: none;
+    }
+
     .feature-card:hover {
-      transform: translateY(-6px);
+      transform: translateY(-5px);
       border-color: var(--brown-mid);
+      border-top-color: var(--gold);
+      box-shadow:
+        inset 2px 2px 0 rgba(196,132,90,0.1),
+        inset -2px -2px 0 rgba(0,0,0,0.5),
+        0 0 0 1px rgba(0,0,0,0.6),
+        6px 6px 0 rgba(0,0,0,0.45),
+        0 0 20px rgba(245,212,121,0.06);
     }
 
     .feature-card:hover::before { opacity: 1; }
@@ -741,9 +780,12 @@
     .rank-badge {
       font-family: 'Press Start 2P', monospace;
       font-size: 0.5rem;
-      padding: 12px 20px;
-      border: 4px solid;
+      padding: 14px 22px;
+      border: 3px solid;
+      border-top-width: 2px;
+      border-bottom-width: 4px;
       letter-spacing: 2px;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.08), inset 0 -2px 0 rgba(0,0,0,0.35), 3px 3px 0 rgba(0,0,0,0.4);
       position: relative;
       overflow: hidden;
       transition: transform 0.2s, box-shadow 0.2s;
@@ -881,12 +923,13 @@
 
     .ip-label {
       font-size: 0.4rem;
-      background: var(--brown-dark);
-      color: var(--brown-light);
+      background: linear-gradient(135deg, var(--brown-mid), var(--brown-dark));
+      color: var(--gold);
       padding: 14px 18px;
       border: 3px solid var(--brown-mid);
       border-right: none;
       letter-spacing: 2px;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.1);
     }
 
     .ip-value {
@@ -1470,8 +1513,9 @@
 <!-- FEATURES -->
 <div id="features">
   <div class="inner">
-    <div class="section-label">// GAMEPLAY</div>
+    <div class="section-label">THE PILLARS OF THE CIVILIZATION</div>
     <h2 class="section-title">WHAT AWAITS YOU</h2>
+    <div class="section-title-rule"></div>
     <p class="section-sub">Four pillars. One civilization. Your legacy starts here.</p>
 
     <div class="features-grid">
@@ -1517,8 +1561,9 @@
 <section id="about">
   <div class="about-grid">
     <div class="about-text">
-      <div class="section-label">// ABOUT</div>
+      <div class="section-label">THE ORIGIN</div>
       <h2 class="section-title">BUILT ON<br />EVBO'S VISION</h2>
+      <div class="section-title-rule"></div>
       <p>EVBM PK CIV is inspired by <strong>Evbo's legendary Parkour Civilization</strong> series. We took everything that made it great and built a full multiplayer experience around it.</p>
       <p>Every system — tickets, ranks, courses, battles — is designed to keep you engaged and coming back. <strong>Progress never resets.</strong> Your grind is permanent.</p>
       <p>Whether you're here to speed-run courses or dominate in parkour battles, there's a path for you. <strong>The civilization grows with every player.</strong></p>
@@ -1535,8 +1580,9 @@
 <!-- RANKS -->
 <div id="ranks">
   <div class="inner">
-    <div class="section-label">// PROGRESSION</div>
+    <div class="section-label">THE HIERARCHY</div>
     <h2 class="section-title">RANK UP THE LADDER</h2>
+    <div class="section-title-rule"></div>
     <p class="section-sub">Use a ticket to reach Pro, a key to reach Master. Keep climbing. Where do you stand?</p>
 
     <div class="ranks-row">
@@ -1555,8 +1601,9 @@
 
 <!-- RANK PERKS -->
 <section id="rank-perks" style="background: linear-gradient(rgba(245,212,121,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(245,212,121,0.02) 1px, transparent 1px), radial-gradient(ellipse 60% 50% at 50% 50%, rgba(92,68,0,0.15) 0%, transparent 70%), #0d0d0a; background-size: 32px 32px, 32px 32px, 100% 100%, 100% 100%; max-width: 100%; padding: 80px 40px;"><div style="max-width:1200px; margin:0 auto;">
-  <div class="section-label">// PROGRESSION</div>
+  <div class="section-label">THE LAWS OF THE LAND</div>
   <h2 class="section-title">WHAT EACH RANK UNLOCKS</h2>
+  <div class="section-title-rule"></div>
   <p class="section-sub">Every rank opens new doors. Here's what's waiting for you.</p>
   <div class="perks-grid">
     <div class="perk-card perk-noob">
@@ -1617,8 +1664,9 @@
 <!-- FAQ -->
 <div style="background: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px), radial-gradient(ellipse 80% 60% at 50% 40%, rgba(20,20,35,0.8) 0%, #0d0d11 100%); background-size: 16px 16px, 16px 16px, 100% 100%; max-width:100%; padding: 80px 40px;">
   <div style="max-width:1200px; margin:0 auto;">
-    <div class="section-label">// QUESTIONS</div>
+    <div class="section-label">SCROLLS OF KNOWLEDGE</div>
     <h2 class="section-title">COMMON QUESTIONS</h2>
+    <div class="section-title-rule"></div>
     <div class="faq-list">
       <div class="faq-item" onclick="this.classList.toggle('open')">
         <div class="faq-q">What version of Minecraft do I need?</div>
@@ -1643,8 +1691,9 @@
 <!-- HOW TO JOIN -->
 <div style="background: repeating-linear-gradient(0deg, transparent 0px, transparent 15px, rgba(92,58,30,0.06) 15px, rgba(92,58,30,0.06) 16px), radial-gradient(ellipse 80% 60% at 50% 50%, rgba(92,58,30,0.15) 0%, transparent 70%), #0f0e0b; max-width:100%; padding: 80px 40px;">
   <div style="max-width:1200px; margin:0 auto;">
-    <div class="section-label">// GET STARTED</div>
+    <div class="section-label">THE GATE TO THE CIVILIZATION</div>
     <h2 class="section-title">HOW TO JOIN</h2>
+    <div class="section-title-rule"></div>
     <p class="section-sub">Three steps. That's all it takes.</p>
     <div class="how-grid">
       <div class="how-step">
@@ -1878,89 +1927,277 @@
     observer.observe(el);
   });
 
-  // ---- Background Canvas ----
+  // ---- Background Canvas — Parkour Civilization ----
   const canvas = document.getElementById('bg-canvas');
-  const ctx = canvas.getContext('2d');
-
-  // ---- Hero fire canvas ----
-
-  // ---- Fire particle system — emits from hero bottom ----
-  const PARTICLES_PER_FIRE = 25;
-
-  function getFireXs(W) {
-    const NUM_FIRES = 8;
-    return Array.from({length: NUM_FIRES}, (_, i) => (W / (NUM_FIRES + 1)) * (i + 1));
-  }
-
-  const PARTICLE_COLORS = ['#F5D479','#C4845A','#E05555','#FF7070','#FFE89A','#8B5E3C'];
-
-  function makeParticle(fireX, W) {
-    const life = 0.6 + Math.random() * 0.8;
-    return {
-      x: fireX + (Math.random() - 0.5) * 80,
-      y: H,
-      vx: (Math.random() - 0.5) * 1.2,
-      vy: -(1.5 + Math.random() * 3.5),
-      life,
-      maxLife: life,
-      size: 4 + Math.floor(Math.random() * 3) * 4,
-      wobble: (Math.random() - 0.5) * 0.04,
-      color: PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)],
-    };
-  }
+  const ctx    = canvas.getContext('2d');
+  const B      = 8; // pixel block size
 
   let W = window.innerWidth;
   let H = window.innerHeight;
-  canvas.width = W;
+  canvas.width  = W;
   canvas.height = H;
 
-  let fireXs = getFireXs(W);
-  let particles = [];
-  fireXs.forEach(fx => {
-    for (let i = 0; i < PARTICLES_PER_FIRE; i++) {
-      const p = makeParticle(fx, W);
-      p.life = Math.random() * p.maxLife;
-      p.y = H - (1 - p.life / p.maxLife) * H * 0.6;
-      particles.push({...p, fireX: fx});
-    }
-  });
-
   window.addEventListener('resize', () => {
-    W = window.innerWidth;
-    H = window.innerHeight;
-    canvas.width = W;
-    canvas.height = H;
-    fireXs = getFireXs(W);
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.width = W; canvas.height = H;
+    buildPlatforms();
+    buildRuins();
   });
 
-  function draw() {
-    canvas.width = W;
-    canvas.height = H;
+  // ---- Palette ----
+  const PAL = {
+    grassA: '#7A6030', grassB: '#C4845A', grassGold: '#F5D479',
+    stoneA: '#8B5E3C', stoneB: '#5C3A1E',
+    playerBody: '#C4845A', playerHead: '#F0E8D8', playerLeg: '#8B5E3C',
+    dust: ['#F5D479','#C4845A','rgba(245,212,121,0.6)','rgba(196,132,90,0.5)'],
+  };
+
+  // ---- Ruins (distant, static) ----
+  let ruins = [];
+  function buildRuins() {
+    ruins = Array.from({length: 7}, (_, i) => {
+      const t = i / 6;
+      return {
+        x: t * W * 1.1 - W * 0.05,
+        baseY: H * (0.48 + Math.sin(i * 2.1) * 0.08),
+        w: B * (4 + Math.floor(Math.random() * 6)),
+        h: B * (8 + Math.floor(Math.random() * 12)),
+        kind: i % 3, // 0=pillar, 1=tower, 2=arch pair
+      };
+    });
+  }
+  buildRuins();
+
+  function drawRuins() {
+    ctx.fillStyle = 'rgba(92,58,30,0.13)';
+    ruins.forEach(r => {
+      const x = Math.round(r.x / B) * B;
+      const y = Math.round((r.baseY - r.h) / B) * B;
+      if (r.kind === 0) {
+        // Pillar + capital
+        ctx.fillRect(x, y, r.w, r.h);
+        ctx.fillRect(x - B, y, r.w + B * 2, B * 2);
+      } else if (r.kind === 1) {
+        // Crenellated tower
+        ctx.fillRect(x, y, r.w, r.h);
+        for (let bx = x; bx < x + r.w; bx += B * 2)
+          ctx.fillRect(bx, y - B * 2, B, B * 2);
+      } else {
+        // Two pillars + lintel
+        const hw = Math.max(B * 2, Math.floor(r.w / 2 / B) * B);
+        ctx.fillRect(x, y, hw, r.h);
+        ctx.fillRect(x + r.w - hw, y, hw, r.h);
+        ctx.fillRect(x, y, r.w, B * 2);
+      }
+    });
+  }
+
+  // ---- Platforms ----
+  let platforms = [];
+  const PLAT_GAP  = 170;
+  const PLAT_YMIN = 0.30;
+  const PLAT_YMAX = 0.72;
+
+  function platY(x) {
+    return H * (PLAT_YMIN + (PLAT_YMAX - PLAT_YMIN) *
+      (0.5 + 0.5 * Math.sin(x * 0.0055 + 1.4)));
+  }
+
+  function buildPlatforms() {
+    platforms = [];
+    const count = Math.ceil(W / PLAT_GAP) + 5;
+    for (let i = 0; i < count; i++) {
+      const wx = i * PLAT_GAP - PLAT_GAP;
+      platforms.push({
+        wx,
+        y:    platY(wx),
+        w:    B * (8 + Math.floor(Math.random() * 5)),
+        gold: Math.random() < 0.25,
+      });
+    }
+  }
+  buildPlatforms();
+
+  let scrollX = 0;
+  const SCROLL_SPD = 0.5;
+
+  function drawPlatform(p) {
+    const sx = Math.round((p.wx - scrollX) / B) * B;
+    const sy = Math.round(p.y / B) * B;
+    if (sx + p.w < -B * 4 || sx > W + B * 4) return;
+    // Top (grass / gold)
+    ctx.fillStyle = p.gold ? PAL.grassGold : PAL.grassA;
+    ctx.fillRect(sx, sy, p.w, B);
+    // Gold shimmer line
+    if (p.gold) {
+      ctx.fillStyle = 'rgba(255,240,150,0.35)';
+      ctx.fillRect(sx, sy, p.w, 2);
+    }
+    // Middle stone
+    ctx.fillStyle = PAL.stoneA;
+    ctx.fillRect(sx, sy + B, p.w, B);
+    // Base
+    ctx.fillStyle = PAL.stoneB;
+    ctx.fillRect(sx, sy + B * 2, p.w, B);
+    // Block-seam lines
+    ctx.fillStyle = 'rgba(0,0,0,0.18)';
+    for (let bx = sx + B * 2; bx < sx + p.w; bx += B * 2)
+      ctx.fillRect(bx, sy, 1, B * 3);
+  }
+
+  // ---- Player ----
+  const player = { x: W * 0.18, y: 0, vy: 0, frame: 0, ft: 0, air: false };
+
+  function currentPlatform() {
+    for (const p of platforms) {
+      const sx = p.wx - scrollX;
+      if (player.x >= sx && player.x <= sx + p.w) return p;
+    }
+    return null;
+  }
+  function nextPlatform() {
+    let best = null;
+    for (const p of platforms) {
+      const sx = p.wx - scrollX;
+      if (sx > player.x && (best === null || sx < best.wx - scrollX)) best = p;
+    }
+    return best;
+  }
+
+  function updatePlayer(dt) {
+    const plat = currentPlatform();
+    const groundY = plat ? plat.y : H + 200;
+
+    if (player.y >= groundY) {
+      player.y  = groundY;
+      player.vy = 0;
+      player.air = false;
+      // Jump when near the edge
+      if (plat && (plat.wx - scrollX + plat.w) - player.x < B * 3) {
+        player.vy  = -(4.5 + Math.random());
+        player.air = true;
+      }
+    } else {
+      player.vy  += 0.22 * dt;
+      player.air  = true;
+    }
+    player.y += player.vy * dt;
+
+    // Fell off — teleport to next platform
+    if (player.y > H + 80) {
+      const np = nextPlatform();
+      if (np) { player.y = np.y; player.vy = 0; player.air = false; }
+    }
+
+    player.ft += dt;
+    if (player.ft > 7) { player.frame ^= 1; player.ft = 0; }
+  }
+
+  function drawPlayer() {
+    const sx = Math.round(player.x / B) * B;
+    const sy = Math.round((player.y - B * 3) / B) * B;
+    // Head
+    ctx.fillStyle = PAL.playerHead;
+    ctx.fillRect(sx, sy, B * 2, B * 2);
+    ctx.fillStyle = '#0d0d16';
+    ctx.fillRect(sx + 2, sy + 3, 3, 3);
+    ctx.fillRect(sx + B + 1, sy + 3, 3, 3);
+    // Body
+    ctx.fillStyle = PAL.playerBody;
+    ctx.fillRect(sx - B / 2, sy + B * 2, B * 3, B);
+    // Legs
+    ctx.fillStyle = PAL.playerLeg;
+    if (player.air) {
+      ctx.fillRect(sx, sy + B * 3, B, B);
+      ctx.fillRect(sx + B, sy + B * 3, B, B);
+    } else if (player.frame === 0) {
+      ctx.fillRect(sx, sy + B * 3, B, B);
+      ctx.fillRect(sx + B, sy + B * 2.5, B, B * 0.5);
+    } else {
+      ctx.fillRect(sx, sy + B * 2.5, B, B * 0.5);
+      ctx.fillRect(sx + B, sy + B * 3, B, B);
+    }
+  }
+
+  // ---- Dust particles ----
+  function makeDust(spread) {
+    return {
+      x: spread ? Math.random() * W : Math.random() * W,
+      y: spread ? Math.random() * H : H + B,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: -(0.15 + Math.random() * 0.55),
+      life: spread ? Math.random() * 5 : 0,
+      maxLife: 5 + Math.random() * 6,
+      size: Math.random() < 0.3 ? B * 2 : B,
+      color: PAL.dust[Math.floor(Math.random() * PAL.dust.length)],
+    };
+  }
+  const dust = Array.from({length: 45}, () => makeDust(true));
+
+  function drawDust(dt) {
+    dust.forEach((p, i) => {
+      const a = Math.sin((p.life / p.maxLife) * Math.PI) * 0.35;
+      ctx.globalAlpha = a;
+      ctx.fillStyle   = p.color;
+      ctx.fillRect(Math.round(p.x / B) * B, Math.round(p.y / B) * B, p.size, p.size);
+      p.x += p.vx * dt; p.y += p.vy * dt; p.life += 0.016 * dt;
+      if (p.life >= p.maxLife) dust[i] = makeDust(false);
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  // ---- Draw loop ----
+  let lastT = 0;
+  function draw(ts) {
+    const dt = Math.min((ts - lastT) / 16.667, 3);
+    lastT = ts;
+
     ctx.clearRect(0, 0, W, H);
 
-    // --- Particles ---
-    particles.forEach((p, idx) => {
-      const t = 1 - (p.life / p.maxLife);
-      const alpha = t < 0.08 ? t * 12.5 * 0.65 : (1 - t) * 0.65;
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = p.color;
-      const px = Math.round(p.x / 4) * 4;
-      const py = Math.round(p.y / 4) * 4;
-      const s = p.size;
-      ctx.fillRect(px - s/2, py - s/2, s, s);
+    // Sky
+    const sky = ctx.createLinearGradient(0, 0, 0, H);
+    sky.addColorStop(0,   '#09080f');
+    sky.addColorStop(0.6, '#0d0d16');
+    sky.addColorStop(1,   '#110d0a');
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, W, H);
 
-      p.vx += p.wobble;
-      p.x  += p.vx;
-      p.y  += p.vy;
-      p.life -= 0.016;
-      if (p.life <= 0) {
-        particles[idx] = {...makeParticle(p.fireX, W), fireX: p.fireX};
+    // Far ruins
+    drawRuins();
+
+    // Scroll world
+    scrollX += SCROLL_SPD * dt;
+
+    // Recycle platforms off left edge
+    platforms.forEach(p => {
+      if (p.wx - scrollX < -p.w - B * 4) {
+        const last = platforms.reduce((a, b) => a.wx > b.wx ? a : b);
+        p.wx  = last.wx + PLAT_GAP + Math.floor(Math.random() * 40 - 20);
+        p.y   = platY(p.wx);
+        p.w   = B * (8 + Math.floor(Math.random() * 5));
+        p.gold = Math.random() < 0.25;
       }
     });
 
-    ctx.globalAlpha = 1;
+    // Platforms
+    platforms.forEach(drawPlatform);
+
+    // Player
+    updatePlayer(dt);
+    drawPlayer();
+
+    // Dust
+    drawDust(dt);
+
     requestAnimationFrame(draw);
   }
+
+  // Init player on first platform
+  (function() {
+    buildPlatforms();
+    const p0 = platforms[1];
+    player.y = p0 ? p0.y : H * 0.55;
+  })();
 
   requestAnimationFrame(draw);
 
@@ -1982,6 +2219,12 @@
 
   fetchServerStatus();
   setInterval(fetchServerStatus, 3000); // refresh every 3 s
+
+  // ---- Airtable config — fill these in ----
+  const AIRTABLE_TOKEN   = 'YOUR_TOKEN_HERE';   // pat...
+  const AIRTABLE_BASE_ID = 'YOUR_BASE_ID_HERE'; // app...
+  const AIRTABLE_TABLE   = 'Players';
+  // ------------------------------------------
 
   // ---- Player stats modal ----
   const RANK_ORDER  = ['noob','pro','master','legend','captain','champion'];
@@ -2074,31 +2317,46 @@
   }
 
   async function loadPlayerStats(username, uuid) {
-    // Determine if player is currently online from server data
-    let onlineRank = null;
-    try {
-      const res  = await fetch('https://api.mcsrvstat.us/3/evbm.minehut.gg');
-      const data = await res.json();
-      if (data.online && data.players && data.players.list) {
-        const match = data.players.list.find(p =>
-          (typeof p === 'string' ? p : p.name).toLowerCase() === username.toLowerCase()
-        );
-        if (match) onlineRank = 'online';
-      }
-    } catch (e) { /* ignore */ }
-
-    // Rank badge — default to noob until a backend provides real rank
-    const storedRank = localStorage.getItem(`rank_${uuid}`) || 'noob';
     const rankEl = document.getElementById('player-rank-badge');
-    rankEl.textContent  = RANK_LABELS[storedRank];
-    rankEl.className    = `rank-badge rank-${storedRank}`;
 
-    // Stats — placeholder until a backend is connected
-    // To connect: replace the '--' below with data fetched from your server API
-    document.getElementById('stat-tickets').textContent = '--';
-    document.getElementById('stat-keys').textContent    = '--';
-    document.getElementById('stat-courses').textContent = '--';
-    document.getElementById('stat-battles').textContent = '--';
+    // Show loading state
+    rankEl.textContent = '...';
+    rankEl.className   = 'rank-badge';
+    ['stat-tickets','stat-keys','stat-courses','stat-battles']
+      .forEach(id => document.getElementById(id).textContent = '...');
+
+    try {
+      const filter = encodeURIComponent(`{Username}="${username}"`);
+      const url    = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE)}?filterByFormula=${filter}`;
+      const res    = await fetch(url, {
+        headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` }
+      });
+      const data = await res.json();
+
+      if (data.records && data.records.length > 0) {
+        const f    = data.records[0].fields;
+        const rank = (f.Rank || 'noob').toLowerCase();
+
+        rankEl.textContent = RANK_LABELS[rank] || rank.toUpperCase();
+        rankEl.className   = `rank-badge rank-${rank}`;
+
+        document.getElementById('stat-tickets').textContent = f.Tickets ?? '--';
+        document.getElementById('stat-keys').textContent    = f.Keys    ?? '--';
+        document.getElementById('stat-courses').textContent = f.Courses ?? '--';
+        document.getElementById('stat-battles').textContent = f.Battles ?? '--';
+      } else {
+        // Player not in Airtable yet
+        rankEl.textContent = 'NOOB';
+        rankEl.className   = 'rank-badge rank-noob';
+        ['stat-tickets','stat-keys','stat-courses','stat-battles']
+          .forEach(id => document.getElementById(id).textContent = '0');
+      }
+    } catch (e) {
+      rankEl.textContent = '???';
+      ['stat-tickets','stat-keys','stat-courses','stat-battles']
+        .forEach(id => document.getElementById(id).textContent = '--');
+      console.warn('Airtable fetch failed:', e);
+    }
   }
 
   function switchPlayer() {

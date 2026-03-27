@@ -2025,6 +2025,11 @@
 
   requestAnimationFrame(draw);
 
+  // ---- Airtable config ----
+  const AIRTABLE_TOKEN   = 'YOUR_TOKEN_HERE';   // paste your pat... token
+  const AIRTABLE_BASE_ID = 'YOUR_BASE_ID_HERE'; // paste your app... base ID
+  const AIRTABLE_TABLE   = 'Players';
+
   // ---- Live server status ----
   const statEl = document.querySelector('.stat-num[data-target]');
   let lastCount = -1;
@@ -2124,14 +2129,38 @@
     loadPlayerStats(uuid);
   }
 
-  function loadPlayerStats(uuid) {
-    const storedRank = localStorage.getItem(`rank_${uuid}`) || 'noob';
-    playerRankEl.textContent = RANK_LABELS[storedRank];
-    playerRankEl.className   = `rank-badge rank-${storedRank}`;
-    document.getElementById('stat-playtime').textContent = '--';
-    document.getElementById('stat-jumps').textContent    = '--';
-    document.getElementById('stat-coins').textContent    = '--';
-    document.getElementById('stat-rank').textContent     = '--';
+  async function loadPlayerStats(uuid) {
+    document.getElementById('stat-playtime').textContent = '...';
+    document.getElementById('stat-jumps').textContent    = '...';
+    document.getElementById('stat-coins').textContent    = '...';
+    document.getElementById('stat-rank').textContent     = '...';
+    try {
+      const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${encodeURIComponent(AIRTABLE_TABLE)}?filterByFormula=${encodeURIComponent(`{UUID}="${uuid}"`)}`;
+      const res  = await fetch(url, { headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` } });
+      const data = await res.json();
+      const rec  = data.records && data.records[0];
+      if (rec) {
+        const f = rec.fields;
+        const mins = Math.floor((f.Playtime || 0) / 60);
+        document.getElementById('stat-playtime').textContent = mins >= 60 ? `${Math.floor(mins/60)}h ${mins%60}m` : `${mins}m`;
+        document.getElementById('stat-jumps').textContent    = (f.Jumps  || 0).toLocaleString();
+        document.getElementById('stat-coins').textContent    = (f.Coins  || 0).toLocaleString();
+        document.getElementById('stat-rank').textContent     = f.Rank || '--';
+        const rankKey = (f.Rank || 'noob').toLowerCase();
+        playerRankEl.textContent = RANK_LABELS[rankKey] || f.Rank || 'NOOB';
+        playerRankEl.className   = `rank-badge rank-${rankKey}`;
+      } else {
+        document.getElementById('stat-playtime').textContent = '--';
+        document.getElementById('stat-jumps').textContent    = '--';
+        document.getElementById('stat-coins').textContent    = '--';
+        document.getElementById('stat-rank').textContent     = '--';
+      }
+    } catch {
+      document.getElementById('stat-playtime').textContent = 'ERR';
+      document.getElementById('stat-jumps').textContent    = 'ERR';
+      document.getElementById('stat-coins').textContent    = 'ERR';
+      document.getElementById('stat-rank').textContent     = 'ERR';
+    }
   }
 
   function switchPlayer() {

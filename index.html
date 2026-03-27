@@ -27,7 +27,7 @@
     html { scroll-behavior: smooth; }
 
     body {
-      background: var(--bg);
+      background: transparent;
       color: var(--white);
       font-family: 'Press Start 2P', monospace;
       overflow-x: hidden;
@@ -40,7 +40,7 @@
       width: 100%; height: 100%;
       pointer-events: none;
       z-index: 0;
-      opacity: 0.35;
+      opacity: 1;
     }
 
     nav, #hero, #features, #about, #ranks, .marquee-wrap, section, footer, #cta, .how-grid-wrap {
@@ -314,7 +314,7 @@
         radial-gradient(ellipse 35% 25% at 15% 85%, rgba(184,50,50,0.12) 0%, transparent 60%),
         radial-gradient(ellipse 80% 60% at 50% 40%, rgba(92,58,30,0.35) 0%, transparent 70%),
         radial-gradient(ellipse 60% 40% at 50% 75%, rgba(92,26,26,0.25) 0%, transparent 70%),
-        var(--bg);
+        transparent;
     }
 
     /* Animated background grid */
@@ -549,7 +549,7 @@
         repeating-linear-gradient(0deg, transparent 0px, transparent 15px, rgba(92,58,30,0.055) 15px, rgba(92,58,30,0.055) 16px),
         repeating-linear-gradient(90deg, transparent 0px, transparent 31px, rgba(92,58,30,0.035) 31px, rgba(92,58,30,0.035) 32px),
         radial-gradient(ellipse 70% 50% at 50% 50%, rgba(92,58,30,0.14) 0%, transparent 70%),
-        linear-gradient(180deg, var(--bg) 0%, #0d0d11 100%);
+        linear-gradient(180deg, rgba(13,13,22,0.82) 0%, rgba(13,13,17,0.82) 100%);
       background-size: 100% 16px, 32px 100%, 100% 100%, 100% 100%;
       max-width: 100%;
       padding: 80px 40px;
@@ -574,7 +574,7 @@
     .feature-card {
       background:
         repeating-linear-gradient(0deg, transparent 0px, transparent 7px, rgba(92,58,30,0.04) 7px, rgba(92,58,30,0.04) 8px),
-        linear-gradient(160deg, rgba(92,58,30,0.12) 0%, var(--bg) 60%);
+        linear-gradient(160deg, rgba(92,58,30,0.12) 0%, rgba(13,13,22,0.95) 60%);
       border: 3px solid var(--brown-dark);
       border-top: 3px solid var(--brown-mid);
       padding: 32px 24px;
@@ -705,7 +705,7 @@
         repeating-linear-gradient(0deg, transparent 0px, transparent 15px, rgba(139,94,60,0.05) 15px, rgba(139,94,60,0.05) 16px),
         radial-gradient(ellipse 70% 60% at 25% 50%, rgba(92,58,30,0.18) 0%, transparent 65%),
         radial-gradient(ellipse 50% 40% at 80% 60%, rgba(92,26,26,0.1) 0%, transparent 60%),
-        var(--bg);
+        rgba(13,13,22,0.78);
     }
 
     .about-grid {
@@ -759,7 +759,7 @@
         radial-gradient(ellipse 100% 80% at 50% 50%, rgba(92,26,26,0.3) 0%, transparent 70%),
         radial-gradient(ellipse 40% 30% at 10% 20%, rgba(92,26,26,0.15) 0%, transparent 50%),
         radial-gradient(ellipse 40% 30% at 90% 80%, rgba(92,26,26,0.15) 0%, transparent 50%),
-        linear-gradient(180deg, #0d0d11 0%, #110810 100%);
+        linear-gradient(180deg, rgba(13,13,17,0.82) 0%, rgba(17,8,16,0.82) 100%);
       background-size: 16px 16px, 16px 16px, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
       max-width: 100%;
       padding: 80px 40px;
@@ -885,7 +885,7 @@
         radial-gradient(ellipse 30% 25% at 15% 35%, rgba(184,80,0,0.2) 0%, transparent 55%),
         radial-gradient(ellipse 30% 25% at 85% 65%, rgba(92,26,26,0.25) 0%, transparent 55%),
         radial-gradient(ellipse 80% 40% at 50% 100%, rgba(184,50,50,0.15) 0%, transparent 60%),
-        linear-gradient(180deg, #110810 0%, var(--bg2) 100%);
+        linear-gradient(180deg, rgba(17,8,16,0.85) 0%, rgba(9,9,15,0.85) 100%);
       max-width: 100%;
       padding: 100px 40px;
       text-align: center;
@@ -966,7 +966,7 @@
       background:
         repeating-linear-gradient(0deg, transparent 0px, transparent 7px, rgba(255,255,255,0.02) 7px, rgba(255,255,255,0.02) 8px),
         repeating-linear-gradient(90deg, transparent 0px, transparent 7px, rgba(255,255,255,0.02) 7px, rgba(255,255,255,0.02) 8px),
-        #0a0a0e;
+        rgba(10,10,14,0.9);
       background-size: 8px 8px, 8px 8px, 100% 100%;
       border-top: 4px solid var(--brown-dark);
       padding: 40px;
@@ -1600,7 +1600,7 @@
 </div>
 
 <!-- RANK PERKS -->
-<section id="rank-perks" style="background: linear-gradient(rgba(245,212,121,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(245,212,121,0.02) 1px, transparent 1px), radial-gradient(ellipse 60% 50% at 50% 50%, rgba(92,68,0,0.15) 0%, transparent 70%), #0d0d0a; background-size: 32px 32px, 32px 32px, 100% 100%, 100% 100%; max-width: 100%; padding: 80px 40px;"><div style="max-width:1200px; margin:0 auto;">
+<section id="rank-perks" style="background: linear-gradient(rgba(245,212,121,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(245,212,121,0.02) 1px, transparent 1px), radial-gradient(ellipse 60% 50% at 50% 50%, rgba(92,68,0,0.15) 0%, transparent 70%), rgba(13,13,10,0.82); background-size: 32px 32px, 32px 32px, 100% 100%, 100% 100%; max-width: 100%; padding: 80px 40px;"><div style="max-width:1200px; margin:0 auto;">
   <div class="section-label">THE LAWS OF THE LAND</div>
   <h2 class="section-title">WHAT EACH RANK UNLOCKS</h2>
   <div class="section-title-rule"></div>
@@ -1662,7 +1662,7 @@
 </div></section>
 
 <!-- FAQ -->
-<div style="background: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px), radial-gradient(ellipse 80% 60% at 50% 40%, rgba(20,20,35,0.8) 0%, #0d0d11 100%); background-size: 16px 16px, 16px 16px, 100% 100%; max-width:100%; padding: 80px 40px;">
+<div style="background: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px), rgba(13,13,17,0.82); background-size: 16px 16px, 16px 16px, 100% 100%; max-width:100%; padding: 80px 40px;">
   <div style="max-width:1200px; margin:0 auto;">
     <div class="section-label">SCROLLS OF KNOWLEDGE</div>
     <h2 class="section-title">COMMON QUESTIONS</h2>
@@ -1689,7 +1689,7 @@
 </div>
 
 <!-- HOW TO JOIN -->
-<div style="background: repeating-linear-gradient(0deg, transparent 0px, transparent 15px, rgba(92,58,30,0.06) 15px, rgba(92,58,30,0.06) 16px), radial-gradient(ellipse 80% 60% at 50% 50%, rgba(92,58,30,0.15) 0%, transparent 70%), #0f0e0b; max-width:100%; padding: 80px 40px;">
+<div style="background: repeating-linear-gradient(0deg, transparent 0px, transparent 15px, rgba(92,58,30,0.06) 15px, rgba(92,58,30,0.06) 16px), radial-gradient(ellipse 80% 60% at 50% 50%, rgba(92,58,30,0.15) 0%, transparent 70%), rgba(15,14,11,0.82); max-width:100%; padding: 80px 40px;">
   <div style="max-width:1200px; margin:0 auto;">
     <div class="section-label">THE GATE TO THE CIVILIZATION</div>
     <h2 class="section-title">HOW TO JOIN</h2>

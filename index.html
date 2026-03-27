@@ -1400,20 +1400,20 @@
       </div>
       <div class="stats-grid">
         <div class="stat-box">
-          <span class="stat-box-num" id="stat-tickets">--</span>
-          <span class="stat-box-label">TICKETS</span>
+          <span class="stat-box-num" id="stat-playtime">--</span>
+          <span class="stat-box-label">PLAYTIME</span>
         </div>
         <div class="stat-box">
-          <span class="stat-box-num" id="stat-keys">--</span>
-          <span class="stat-box-label">KEYS</span>
+          <span class="stat-box-num" id="stat-jumps">--</span>
+          <span class="stat-box-label">JUMPS</span>
         </div>
         <div class="stat-box">
-          <span class="stat-box-num" id="stat-courses">--</span>
-          <span class="stat-box-label">COURSES DONE</span>
+          <span class="stat-box-num" id="stat-coins">--</span>
+          <span class="stat-box-label">COINS</span>
         </div>
         <div class="stat-box">
-          <span class="stat-box-num" id="stat-battles">--</span>
-          <span class="stat-box-label">BATTLES WON</span>
+          <span class="stat-box-num" id="stat-rank">--</span>
+          <span class="stat-box-label">RANK</span>
         </div>
       </div>
       <button class="modal-switch" onclick="switchPlayer()">SWITCH PLAYER</button>
@@ -2093,12 +2093,11 @@
     rankEl.textContent  = RANK_LABELS[storedRank];
     rankEl.className    = `rank-badge rank-${storedRank}`;
 
-    // Stats — placeholder until a backend is connected
-    // To connect: replace the '--' below with data fetched from your server API
-    document.getElementById('stat-tickets').textContent = '--';
-    document.getElementById('stat-keys').textContent    = '--';
-    document.getElementById('stat-courses').textContent = '--';
-    document.getElementById('stat-battles').textContent = '--';
+    // Stats — fill in from Airtable once connected
+    document.getElementById('stat-playtime').textContent = '--';
+    document.getElementById('stat-jumps').textContent    = '--';
+    document.getElementById('stat-coins').textContent    = '--';
+    document.getElementById('stat-rank').textContent     = '--';
   }
 
   function switchPlayer() {

@@ -364,61 +364,6 @@
       z-index: 0;
     }
 
-    /* ---- Small fires ---- */
-    .fire-pit {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 120px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-around;
-      padding: 0 4%;
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    .small-fire {
-      display: flex;
-      align-items: flex-end;
-      gap: 3px;
-      filter: drop-shadow(0 0 12px #FF6600) drop-shadow(0 0 24px #FF3300);
-    }
-
-    .small-fire span {
-      display: block;
-      border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%;
-      transform-origin: bottom center;
-    }
-
-    .small-fire span:nth-child(1) {
-      width: 14px; height: 34px;
-      background: linear-gradient(to top, #CC2200, #FF5500, #FF9900);
-      animation: flk1 0.38s ease-in-out infinite alternate;
-    }
-    .small-fire span:nth-child(2) {
-      width: 20px; height: 52px;
-      background: linear-gradient(to top, #FF2200, #FF7700, #FFD000);
-      animation: flk2 0.27s ease-in-out infinite alternate;
-    }
-    .small-fire span:nth-child(3) {
-      width: 13px; height: 30px;
-      background: linear-gradient(to top, #BB2000, #FF4400, #FF9900);
-      animation: flk3 0.44s ease-in-out infinite alternate;
-    }
-
-    @keyframes flk1 {
-      0%   { transform: scaleX(1.0) scaleY(1.0) rotate(-4deg); }
-      100% { transform: scaleX(0.82) scaleY(1.18) rotate(3deg); }
-    }
-    @keyframes flk2 {
-      0%   { transform: scaleX(1.0) scaleY(1.0) rotate(2deg);  opacity: 1; }
-      100% { transform: scaleX(0.88) scaleY(1.12) rotate(-3deg); opacity: 0.85; }
-    }
-    @keyframes flk3 {
-      0%   { transform: scaleX(0.9) scaleY(0.92) rotate(5deg);  opacity: 0.8; }
-      100% { transform: scaleX(1.1) scaleY(1.08) rotate(-2deg); opacity: 1; }
-    }
-
     /* Logo block */
     .hero-logo {
       position: relative;
@@ -1411,6 +1356,17 @@
       50%       { box-shadow: 0 0 20px rgba(111,240,255,0.8), 0 0 40px rgba(111,240,255,0.3); }
     }
 
+    /* ---- DOOM FIRE CANVAS ---- */
+    #fire-canvas {
+      position: fixed;
+      bottom: 0; left: 0;
+      width: 100%;
+      height: 240px;
+      pointer-events: none;
+      z-index: 50;
+      image-rendering: pixelated;
+    }
+
     /* ---- RESPONSIVE ---- */
     @media (max-width: 600px) {
       nav ul { display: none; }
@@ -1425,6 +1381,7 @@
 <body>
 
 <canvas id="bg-canvas"></canvas>
+<canvas id="fire-canvas"></canvas>
 
 <!-- NAV -->
 <nav>
@@ -1535,18 +1492,6 @@
   <p class="mc-tip" id="mc-tip"></p>
 
   <div class="scroll-hint">▼ SCROLL DOWN ▼</div>
-
-  <!-- Small fires along the bottom -->
-  <div class="fire-pit">
-    <div class="small-fire"><span></span><span></span><span></span></div>
-    <div class="small-fire" style="animation-delay:0.1s"><span></span><span></span><span></span></div>
-    <div class="small-fire" style="animation-delay:0.2s"><span></span><span></span><span></span></div>
-    <div class="small-fire" style="animation-delay:0.05s"><span></span><span></span><span></span></div>
-    <div class="small-fire" style="animation-delay:0.15s"><span></span><span></span><span></span></div>
-    <div class="small-fire" style="animation-delay:0.3s"><span></span><span></span><span></span></div>
-    <div class="small-fire" style="animation-delay:0.08s"><span></span><span></span><span></span></div>
-    <div class="small-fire" style="animation-delay:0.25s"><span></span><span></span><span></span></div>
-  </div>
 
 </div>
 
@@ -2227,6 +2172,65 @@
   // Restore nav label if already logged in
   const _saved = localStorage.getItem('mc_username');
   if (_saved) { navStatsBtn.textContent = _saved.toUpperCase(); navStatsBtn.classList.add('logged-in'); }
+
+  // ---- DOOM pixel fire (bottom of viewport) ----
+  const FC  = document.getElementById('fire-canvas');
+  const FX  = FC.getContext('2d');
+  const FPX = 4;
+  let FCOLS, FROWS, heatBuf;
+
+  const DOOM_PAL = [
+    '#000000','#0a0000','#160000','#220000','#2e0000','#3a0000',
+    '#460000','#520000','#620000','#740000','#860000','#980000',
+    '#aa0000','#bc0000','#ce0000','#e00000','#f00000','#ff0000',
+    '#ff1400','#ff2800','#ff3c00','#ff5000','#ff6400','#ff7800',
+    '#ff8c00','#ffa000','#ffb400','#ffc800','#ffd600','#ffe400',
+    '#fff000','#fff840','#ffff80','#ffffb0','#ffffd0','#fffff0',
+    '#ffffff'
+  ];
+
+  function initFire() {
+    FC.width  = window.innerWidth;
+    FC.height = 240;
+    FCOLS = Math.ceil(window.innerWidth / FPX);
+    FROWS = Math.ceil(240 / FPX);
+    heatBuf = new Uint8Array(FCOLS * FROWS);
+    for (let c = 0; c < FCOLS; c++) heatBuf[(FROWS - 1) * FCOLS + c] = 36;
+  }
+
+  function tickFire() {
+    for (let r = FROWS - 1; r >= 1; r--) {
+      for (let c = 0; c < FCOLS; c++) {
+        const src = heatBuf[r * FCOLS + c];
+        if (src === 0) {
+          heatBuf[(r - 1) * FCOLS + c] = 0;
+        } else {
+          const rnd = (Math.random() * 3) | 0;
+          const nc  = Math.max(0, Math.min(FCOLS - 1, c - rnd + 1));
+          heatBuf[(r - 1) * FCOLS + nc] = Math.max(0, src - (rnd & 1));
+        }
+      }
+    }
+    for (let c = 0; c < FCOLS; c++) heatBuf[(FROWS - 1) * FCOLS + c] = 36;
+  }
+
+  function renderFire() {
+    tickFire();
+    FX.clearRect(0, 0, FC.width, FC.height);
+    for (let r = 0; r < FROWS; r++) {
+      for (let c = 0; c < FCOLS; c++) {
+        const h = heatBuf[r * FCOLS + c];
+        if (h === 0) continue;
+        FX.fillStyle = DOOM_PAL[h];
+        FX.fillRect(c * FPX, r * FPX, FPX, FPX);
+      }
+    }
+    requestAnimationFrame(renderFire);
+  }
+
+  initFire();
+  window.addEventListener('resize', initFire);
+  renderFire();
 </script>
 </body>
 </html>

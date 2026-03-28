@@ -27,208 +27,20 @@
     html { scroll-behavior: smooth; }
 
     body {
-      background: linear-gradient(180deg, #020214 0%, #05052a 18%, #090830 40%, #0d0a28 65%, #060410 100%);
+      background: var(--bg);
       color: var(--white);
       font-family: 'Press Start 2P', monospace;
       overflow-x: hidden;
       image-rendering: pixelated;
     }
 
-    /* Stars layer 1 */
-    body::before {
-      content: '';
-      position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background-image:
-        radial-gradient(2px 2px at 4%  6%,  #F5D479, transparent),
-        radial-gradient(1px 1px at 11% 12%, #fff,    transparent),
-        radial-gradient(2px 2px at 17% 4%,  #FFE89A, transparent),
-        radial-gradient(1px 1px at 23% 18%, #fff,    transparent),
-        radial-gradient(2px 2px at 29% 8%,  #F5D479, transparent),
-        radial-gradient(1px 1px at 35% 3%,  #fff,    transparent),
-        radial-gradient(2px 2px at 41% 14%, #FFE89A, transparent),
-        radial-gradient(1px 1px at 48% 7%,  #fff,    transparent),
-        radial-gradient(2px 2px at 54% 2%,  #F5D479, transparent),
-        radial-gradient(1px 1px at 60% 16%, #fff,    transparent),
-        radial-gradient(2px 2px at 67% 9%,  #FFE89A, transparent),
-        radial-gradient(1px 1px at 73% 5%,  #fff,    transparent),
-        radial-gradient(2px 2px at 79% 13%, #F5D479, transparent),
-        radial-gradient(1px 1px at 85% 3%,  #fff,    transparent),
-        radial-gradient(2px 2px at 91% 10%, #FFE89A, transparent),
-        radial-gradient(1px 1px at 97% 7%,  #fff,    transparent),
-        radial-gradient(2px 2px at 8%  28%, #F5D479, transparent),
-        radial-gradient(1px 1px at 19% 33%, #fff,    transparent),
-        radial-gradient(2px 2px at 32% 25%, #FFE89A, transparent),
-        radial-gradient(1px 1px at 44% 38%, #fff,    transparent),
-        radial-gradient(2px 2px at 57% 22%, #F5D479, transparent),
-        radial-gradient(1px 1px at 70% 31%, #fff,    transparent),
-        radial-gradient(2px 2px at 82% 27%, #FFE89A, transparent),
-        radial-gradient(1px 1px at 93% 35%, #fff,    transparent),
-        radial-gradient(2px 2px at 14% 48%, #F5D479, transparent),
-        radial-gradient(1px 1px at 38% 52%, #fff,    transparent),
-        radial-gradient(2px 2px at 63% 45%, #FFE89A, transparent),
-        radial-gradient(1px 1px at 87% 50%, #fff,    transparent);
-      animation: starTwinkle1 4s ease-in-out infinite alternate;
-    }
-
-    /* Stars layer 2 */
-    body::after {
-      content: '';
-      position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background-image:
-        radial-gradient(1px 1px at 7%  20%, #fff,    transparent),
-        radial-gradient(2px 2px at 16% 9%,  #F5D479, transparent),
-        radial-gradient(1px 1px at 26% 28%, #fff,    transparent),
-        radial-gradient(2px 2px at 37% 11%, #FFE89A, transparent),
-        radial-gradient(1px 1px at 50% 24%, #fff,    transparent),
-        radial-gradient(2px 2px at 62% 6%,  #F5D479, transparent),
-        radial-gradient(1px 1px at 75% 19%, #fff,    transparent),
-        radial-gradient(2px 2px at 88% 14%, #FFE89A, transparent),
-        radial-gradient(1px 1px at 3%  40%, #fff,    transparent),
-        radial-gradient(2px 2px at 22% 43%, #F5D479, transparent),
-        radial-gradient(1px 1px at 46% 36%, #fff,    transparent),
-        radial-gradient(2px 2px at 68% 42%, #FFE89A, transparent),
-        radial-gradient(1px 1px at 90% 38%, #fff,    transparent);
-      animation: starTwinkle2 6s ease-in-out infinite alternate-reverse;
-    }
-
-    @keyframes starTwinkle1 { 0%{opacity:0.55} 100%{opacity:1} }
-    @keyframes starTwinkle2 { 0%{opacity:0.4}  100%{opacity:0.95} }
-
-    /* Moon */
-    #bg-moon {
+    #bg-canvas {
       position: fixed;
-      top: 8%; right: 14%;
-      width: 56px; height: 56px;
-      background: #f8e860;
-      box-shadow: 0 0 0 4px #c8a020, 0 0 35px 10px rgba(245,210,60,0.35), 0 0 70px 24px rgba(245,210,60,0.12);
-      z-index: 2;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       pointer-events: none;
+      z-index: 0;
     }
-
-    /* Far city (silhouette depth layer) */
-    #bg-city-far {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: 160px;
-      z-index: 2; pointer-events: none;
-    }
-    .bldg-far {
-      position: absolute; bottom: 0;
-      background: #07061a; opacity: 0.55;
-    }
-
-    /* Near city - Minecraft blocks */
-    #bg-city {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: 210px;
-      z-index: 3; pointer-events: none;
-    }
-
-    /* Minecraft block textures */
-    .mc-stone {
-      position: absolute; bottom: 0;
-      background-color: #787878;
-      background-image:
-        linear-gradient(rgba(0,0,0,0.18) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,0,0,0.18) 1px, transparent 1px);
-      background-size: 16px 16px;
-      border-top: 3px solid #b0b0b0;
-      box-shadow: inset 2px 0 0 rgba(255,255,255,0.08), inset -2px 0 0 rgba(0,0,0,0.15);
-    }
-    .mc-wood {
-      position: absolute; bottom: 0;
-      background-color: #9C6C38;
-      background-image:
-        repeating-linear-gradient(0deg, rgba(0,0,0,0.12) 0, rgba(0,0,0,0.12) 1px, transparent 1px, transparent 16px),
-        linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
-      background-size: 8px 16px;
-      border-top: 3px solid #C89050;
-      box-shadow: inset 2px 0 0 rgba(255,255,255,0.1), inset -2px 0 0 rgba(0,0,0,0.2);
-    }
-    .mc-brick {
-      position: absolute; bottom: 0;
-      background-color: #9C3020;
-      background-image:
-        linear-gradient(rgba(50,15,10,0.75) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(50,15,10,0.75) 1px, transparent 1px);
-      background-size: 16px 8px;
-      border-top: 3px solid #CC5040;
-      box-shadow: 0 -4px 14px rgba(200,60,40,0.4), inset 2px 0 0 rgba(255,255,255,0.06), inset -2px 0 0 rgba(0,0,0,0.2);
-    }
-    .mc-cobble {
-      position: absolute; bottom: 0;
-      background-color: #7a7a7a;
-      background-image:
-        radial-gradient(circle at 25% 35%, rgba(0,0,0,0.22) 4px, transparent 5px),
-        radial-gradient(circle at 75% 15%, rgba(0,0,0,0.18) 3px, transparent 4px),
-        radial-gradient(circle at 55% 72%, rgba(0,0,0,0.2)  4px, transparent 5px),
-        radial-gradient(circle at 10% 78%, rgba(0,0,0,0.14) 3px, transparent 4px),
-        radial-gradient(circle at 82% 55%, rgba(0,0,0,0.18) 3px, transparent 4px),
-        linear-gradient(rgba(0,0,0,0.12) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,0,0,0.12) 1px, transparent 1px);
-      background-size: 16px 16px;
-      border-top: 3px solid #ababab;
-      box-shadow: inset 2px 0 0 rgba(255,255,255,0.07), inset -2px 0 0 rgba(0,0,0,0.15);
-    }
-    .mc-gold {
-      position: absolute; bottom: 0;
-      background-color: #c8920a;
-      background-image:
-        linear-gradient(rgba(0,0,0,0.14) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,0,0,0.14) 1px, transparent 1px);
-      background-size: 16px 16px;
-      border-top: 3px solid #F5D479;
-      box-shadow: 0 -4px 18px rgba(245,212,80,0.5), inset 2px 0 0 rgba(255,255,255,0.12), inset -2px 0 0 rgba(0,0,0,0.2);
-    }
-
-    /* Parkour runner */
-    #bg-runner {
-      position: fixed;
-      z-index: 10;
-      pointer-events: none;
-      filter: drop-shadow(0 0 5px #F5D479) drop-shadow(0 0 12px rgba(245,212,121,0.45));
-      animation: runnerMove 30s linear infinite;
-    }
-
-    @keyframes runnerMove {
-      0%   { left:-40px;  bottom:80px;  }
-      7%   { left:7%;     bottom:80px;  }
-      8%   { left:8%;     bottom:64px;  }
-      13%  { left:13%;    bottom:64px;  }
-      14%  { left:14%;    bottom:108px; }
-      16%  { left:16%;    bottom:128px; }
-      21%  { left:21%;    bottom:128px; }
-      22%  { left:22%;    bottom:80px;  }
-      26%  { left:26%;    bottom:80px;  }
-      27%  { left:27%;    bottom:96px;  }
-      32%  { left:32%;    bottom:96px;  }
-      33%  { left:33%;    bottom:64px;  }
-      37%  { left:37%;    bottom:64px;  }
-      39%  { left:39%;    bottom:128px; }
-      41%  { left:41%;    bottom:160px; }
-      46%  { left:46%;    bottom:160px; }
-      47%  { left:47%;    bottom:96px;  }
-      52%  { left:52%;    bottom:96px;  }
-      53%  { left:53%;    bottom:80px;  }
-      59%  { left:59%;    bottom:80px;  }
-      60%  { left:60%;    bottom:112px; }
-      62%  { left:62%;    bottom:128px; }
-      66%  { left:66%;    bottom:128px; }
-      67%  { left:67%;    bottom:80px;  }
-      71%  { left:71%;    bottom:80px;  }
-      72%  { left:72%;    bottom:96px;  }
-      78%  { left:78%;    bottom:96px;  }
-      80%  { left:80%;    bottom:136px; }
-      82%  { left:82%;    bottom:160px; }
-      86%  { left:86%;    bottom:160px; }
-      87%  { left:87%;    bottom:80px;  }
-      92%  { left:92%;    bottom:80px;  }
-      93%  { left:93%;    bottom:64px;  }
-      100% { left:110%;   bottom:64px;  }
-    }
-
-    #bg-canvas { display: none; }
 
     nav, #hero, #features, #about, #ranks, .marquee-wrap, section, footer, #cta, .how-grid-wrap {
       position: relative;
@@ -707,7 +519,7 @@
         linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px),
         radial-gradient(ellipse 70% 50% at 50% 50%, rgba(92,58,30,0.12) 0%, transparent 70%),
-        var(--bg);
+        rgba(13,13,20,0.60);
       background-size: 16px 16px, 16px 16px, 100% 100%, 100% 100%;
       max-width: 100%;
       padding: 80px 40px;
@@ -852,7 +664,7 @@
         repeating-linear-gradient(0deg, transparent 0px, transparent 15px, rgba(139,94,60,0.05) 15px, rgba(139,94,60,0.05) 16px),
         radial-gradient(ellipse 70% 60% at 25% 50%, rgba(92,58,30,0.18) 0%, transparent 65%),
         radial-gradient(ellipse 50% 40% at 80% 60%, rgba(92,26,26,0.1) 0%, transparent 60%),
-        var(--bg);
+        rgba(9,9,15,0.60);
     }
 
     .about-grid {
@@ -906,7 +718,7 @@
         radial-gradient(ellipse 100% 80% at 50% 50%, rgba(92,26,26,0.3) 0%, transparent 70%),
         radial-gradient(ellipse 40% 30% at 10% 20%, rgba(92,26,26,0.15) 0%, transparent 50%),
         radial-gradient(ellipse 40% 30% at 90% 80%, rgba(92,26,26,0.15) 0%, transparent 50%),
-        var(--bg);
+        rgba(13,13,17,0.60);
       background-size: 16px 16px, 16px 16px, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
       max-width: 100%;
       padding: 80px 40px;
@@ -1029,7 +841,7 @@
         radial-gradient(ellipse 30% 25% at 15% 35%, rgba(184,80,0,0.2) 0%, transparent 55%),
         radial-gradient(ellipse 30% 25% at 85% 65%, rgba(92,26,26,0.25) 0%, transparent 55%),
         radial-gradient(ellipse 80% 40% at 50% 100%, rgba(184,50,50,0.15) 0%, transparent 60%),
-        var(--bg);
+        rgba(9,9,15,0.60);
       max-width: 100%;
       padding: 100px 40px;
       text-align: center;
@@ -1109,7 +921,7 @@
       background:
         repeating-linear-gradient(0deg, transparent 0px, transparent 7px, rgba(255,255,255,0.02) 7px, rgba(255,255,255,0.02) 8px),
         repeating-linear-gradient(90deg, transparent 0px, transparent 7px, rgba(255,255,255,0.02) 7px, rgba(255,255,255,0.02) 8px),
-        var(--bg);
+        rgba(10,10,14,0.60);
       background-size: 8px 8px, 8px 8px, 100% 100%;
       border-top: 4px solid var(--brown-dark);
       padding: 40px;
@@ -1544,60 +1356,6 @@
 
 <canvas id="bg-canvas"></canvas>
 
-<!-- Moon -->
-<div id="bg-moon"></div>
-
-<!-- Far city (depth silhouette) -->
-<div id="bg-city-far">
-  <div class="bldg-far" style="left:1%;width:6%;height:55px;"></div>
-  <div class="bldg-far" style="left:8%;width:8%;height:80px;"></div>
-  <div class="bldg-far" style="left:17%;width:7%;height:65px;"></div>
-  <div class="bldg-far" style="left:25%;width:9%;height:95px;"></div>
-  <div class="bldg-far" style="left:35%;width:6%;height:70px;"></div>
-  <div class="bldg-far" style="left:42%;width:9%;height:105px;"></div>
-  <div class="bldg-far" style="left:52%;width:7%;height:75px;"></div>
-  <div class="bldg-far" style="left:60%;width:8%;height:88px;"></div>
-  <div class="bldg-far" style="left:69%;width:7%;height:78px;"></div>
-  <div class="bldg-far" style="left:77%;width:7%;height:100px;"></div>
-  <div class="bldg-far" style="left:85%;width:7%;height:68px;"></div>
-  <div class="bldg-far" style="left:93%;width:7%;height:82px;"></div>
-</div>
-
-<!-- Near city - Minecraft blocks -->
-<div id="bg-city">
-  <div class="mc-stone"  style="left:0%;  width:7%;  height:80px;"></div>
-  <div class="mc-wood"   style="left:7%;  width:6%;  height:64px;"></div>
-  <div class="mc-brick"  style="left:13%; width:8%;  height:128px;"></div>
-  <div class="mc-stone"  style="left:21%; width:5%;  height:80px;"></div>
-  <div class="mc-cobble" style="left:26%; width:6%;  height:96px;"></div>
-  <div class="mc-wood"   style="left:32%; width:5%;  height:64px;"></div>
-  <div class="mc-brick"  style="left:37%; width:9%;  height:160px;"></div>
-  <div class="mc-stone"  style="left:46%; width:6%;  height:96px;"></div>
-  <div class="mc-cobble" style="left:52%; width:7%;  height:80px;"></div>
-  <div class="mc-brick"  style="left:59%; width:7%;  height:128px;"></div>
-  <div class="mc-wood"   style="left:66%; width:5%;  height:80px;"></div>
-  <div class="mc-stone"  style="left:71%; width:7%;  height:96px;"></div>
-  <div class="mc-gold"   style="left:78%; width:8%;  height:160px;"></div>
-  <div class="mc-wood"   style="left:86%; width:6%;  height:80px;"></div>
-  <div class="mc-stone"  style="left:92%; width:8%;  height:64px;"></div>
-</div>
-
-<!-- Parkour runner -->
-<div id="bg-runner">
-  <svg width="28" height="36" viewBox="0 0 28 36" xmlns="http://www.w3.org/2000/svg">
-    <g fill="#F5D479">
-      <rect x="8"  y="0"  width="12" height="10"/>
-      <rect x="9"  y="10" width="10" height="10"/>
-      <rect x="0"  y="8"  width="9"  height="4"/>
-      <rect x="19" y="13" width="9"  height="4"/>
-      <rect x="8"  y="20" width="4"  height="9"/>
-      <rect x="2"  y="27" width="10" height="4"/>
-      <rect x="16" y="20" width="4"  height="7"/>
-      <rect x="16" y="25" width="9"  height="4"/>
-    </g>
-  </svg>
-</div>
-
 <!-- NAV -->
 <nav>
   <div class="nav-logo">
@@ -1794,7 +1552,7 @@
 </div>
 
 <!-- RANK PERKS -->
-<section id="rank-perks" style="background: linear-gradient(rgba(245,212,121,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(245,212,121,0.02) 1px, transparent 1px), radial-gradient(ellipse 60% 50% at 50% 50%, rgba(92,68,0,0.15) 0%, transparent 70%), var(--bg); background-size: 32px 32px, 32px 32px, 100% 100%, 100% 100%; max-width: 100%; padding: 80px 40px;"><div style="max-width:1200px; margin:0 auto;">
+<section id="rank-perks" style="background: linear-gradient(rgba(245,212,121,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(245,212,121,0.02) 1px, transparent 1px), radial-gradient(ellipse 60% 50% at 50% 50%, rgba(92,68,0,0.15) 0%, transparent 70%), rgba(13,13,10,0.60); background-size: 32px 32px, 32px 32px, 100% 100%, 100% 100%; max-width: 100%; padding: 80px 40px;"><div style="max-width:1200px; margin:0 auto;">
   <div class="section-label">// PROGRESSION</div>
   <h2 class="section-title">WHAT EACH RANK UNLOCKS</h2>
   <p class="section-sub">Every rank opens new doors. Here's what's waiting for you.</p>
@@ -1855,7 +1613,7 @@
 </div></section>
 
 <!-- FAQ -->
-<div style="background: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px), var(--bg); background-size: 16px 16px, 16px 16px, 100% 100%; max-width:100%; padding: 80px 40px;">
+<div style="background: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px), rgba(13,13,17,0.60); background-size: 16px 16px, 16px 16px, 100% 100%; max-width:100%; padding: 80px 40px;">
   <div style="max-width:1200px; margin:0 auto;">
     <div class="section-label">// QUESTIONS</div>
     <h2 class="section-title">COMMON QUESTIONS</h2>
@@ -1881,7 +1639,7 @@
 </div>
 
 <!-- HOW TO JOIN -->
-<div style="background: repeating-linear-gradient(0deg, transparent 0px, transparent 15px, rgba(92,58,30,0.06) 15px, rgba(92,58,30,0.06) 16px), radial-gradient(ellipse 80% 60% at 50% 50%, rgba(92,58,30,0.15) 0%, transparent 70%), var(--bg); max-width:100%; padding: 80px 40px;">
+<div style="background: repeating-linear-gradient(0deg, transparent 0px, transparent 15px, rgba(92,58,30,0.06) 15px, rgba(92,58,30,0.06) 16px), radial-gradient(ellipse 80% 60% at 50% 50%, rgba(92,58,30,0.15) 0%, transparent 70%), rgba(15,14,11,0.60); max-width:100%; padding: 80px 40px;">
   <div style="max-width:1200px; margin:0 auto;">
     <div class="section-label">// GET STARTED</div>
     <h2 class="section-title">HOW TO JOIN</h2>
@@ -2115,6 +1873,116 @@
     el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
     observer.observe(el);
   });
+
+  // ---- Background Canvas: Fire ----
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+
+  let W = window.innerWidth;
+  let H = window.innerHeight;
+  canvas.width = W; canvas.height = H;
+
+  const FIRE_COLORS = ['#FFFFFF','#FFF5AA','#FFE060','#FF9900','#FF5500','#CC2200','#881100'];
+
+  function getFireSources() {
+    const count = Math.max(5, Math.floor(W / 160));
+    return Array.from({length: count}, (_, i) => ({
+      x: (W / (count + 1)) * (i + 1),
+      flicker: Math.random() * Math.PI * 2,
+    }));
+  }
+  let sources = getFireSources();
+
+  function makeParticle(src) {
+    const life = 0.5 + Math.random() * 1.2;
+    return {
+      x: src.x + (Math.random() - 0.5) * 50,
+      y: H,
+      vx: (Math.random() - 0.5) * 1.5,
+      vy: -(1.2 + Math.random() * 3.5),
+      life, maxLife: life,
+      size: 4 + Math.floor(Math.random() * 4) * 4,
+      wobble: (Math.random() - 0.5) * 0.07,
+      srcIdx: sources.indexOf(src),
+    };
+  }
+
+  let particles = sources.flatMap(src =>
+    Array.from({length: 35}, () => {
+      const p = makeParticle(src);
+      const frac = Math.random();
+      p.life = p.maxLife * (1 - frac);
+      p.y = H - frac * H * 0.72;
+      return p;
+    })
+  );
+
+  window.addEventListener('resize', () => {
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.width = W; canvas.height = H;
+    sources = getFireSources();
+  });
+
+  function drawFireBase(src) {
+    src.flicker += 0.07 + Math.random() * 0.05;
+    const f = 0.78 + Math.sin(src.flicker) * 0.22;
+
+    const outer = ctx.createRadialGradient(src.x, H, 0, src.x, H - 70, 100 * f);
+    outer.addColorStop(0,   'rgba(255,160,0,0.55)');
+    outer.addColorStop(0.4, 'rgba(255,60,0,0.25)');
+    outer.addColorStop(1,   'rgba(0,0,0,0)');
+    ctx.fillStyle = outer;
+    ctx.fillRect(src.x - 110, H - 130, 220, 130);
+
+    const core = ctx.createRadialGradient(src.x, H, 0, src.x, H - 25, 35 * f);
+    core.addColorStop(0,   'rgba(255,255,180,0.95)');
+    core.addColorStop(0.5, 'rgba(255,180,0,0.65)');
+    core.addColorStop(1,   'rgba(255,60,0,0)');
+    ctx.fillStyle = core;
+    ctx.fillRect(src.x - 45, H - 55, 90, 55);
+  }
+
+  function draw() {
+    ctx.fillStyle = '#080510';
+    ctx.fillRect(0, 0, W, H);
+
+    // Ground ember glow
+    const glow = ctx.createLinearGradient(0, H - 100, 0, H);
+    glow.addColorStop(0, 'rgba(160,30,0,0)');
+    glow.addColorStop(1, 'rgba(160,30,0,0.3)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, H - 100, W, 100);
+
+    sources.forEach(src => drawFireBase(src));
+
+    particles.forEach((p, i) => {
+      const t = 1 - (p.life / p.maxLife);
+      const colorIdx = Math.min(Math.floor(t * FIRE_COLORS.length), FIRE_COLORS.length - 1);
+      const alpha = t < 0.1 ? t * 10 * 0.85 : (1 - t) * 0.85;
+      const size = Math.max(4, p.size * (1 - t * 0.6));
+      const px = Math.round(p.x / 4) * 4;
+      const py = Math.round(p.y / 4) * 4;
+
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = FIRE_COLORS[colorIdx];
+      ctx.fillRect(px - size / 2, py - size / 2, size, size);
+
+      p.vx += p.wobble;
+      p.x  += p.vx;
+      p.y  += p.vy;
+      p.life -= 0.013;
+
+      if (p.life <= 0) {
+        const src = sources[p.srcIdx % sources.length] || sources[0];
+        particles[i] = makeParticle(src);
+      }
+    });
+
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(draw);
+  }
+
+  requestAnimationFrame(draw);
 
   // ---- Airtable config ----
   const AIRTABLE_TOKEN   = 'patpAbTIZAn653X4z.bd16c3aca7caa386b94ae94fb5f98ca8c3bb56da18b71a2783e8c99cfa933695';

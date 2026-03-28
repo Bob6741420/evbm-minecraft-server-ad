@@ -354,11 +354,9 @@
       position: absolute;
       bottom: 0; left: 0;
       width: 100%;
-      height: 320px;
+      height: 280px;
       pointer-events: none;
       z-index: 2;
-      image-rendering: pixelated;
-      image-rendering: crisp-edges;
     }
 
     /* Logo block */
@@ -1898,64 +1896,45 @@
     observer.observe(el);
   });
 
-  // ---- Hero Fire Canvas (DOOM algorithm) ----
+  // ---- Hero Fire Canvas ----
   const fireEl  = document.getElementById('fire-canvas');
-  const fireCtx = fireEl.getContext('2d');
-  const BS = 6;
+  const fCtx    = fireEl.getContext('2d');
+  const FBS     = 8; // pixel block size
+  const FIRE_HT = 280;
+  let fcols, fphases, fheights;
 
-  let FW, FH, fbuf;
-
-  function fireColor(h) {
-    if (h < 20)  return null;
-    if (h < 80)  { const t=(h-20)/60;  return `rgb(${Math.round(t*220)},0,0)`; }
-    if (h < 140) { const t=(h-80)/60;  return `rgb(${220+Math.round(t*35)},${Math.round(t*110)},0)`; }
-    if (h < 200) { const t=(h-140)/60; return `rgb(255,${110+Math.round(t*130)},0)`; }
-                   const t=(h-200)/55; return `rgb(255,${240+Math.round(t*15)},${Math.round(t*220)})`;
+  function setupFire() {
+    fireEl.width  = window.innerWidth;
+    fireEl.height = FIRE_HT;
+    fcols   = Math.ceil(window.innerWidth / FBS);
+    fphases  = Array.from({length: fcols}, () => Math.random() * Math.PI * 2);
+    fheights = Array.from({length: fcols}, () => 0.4 + Math.random() * 0.6);
   }
 
-  function initFire() {
-    FW   = Math.max(10, Math.round((fireEl.parentElement.offsetWidth || window.innerWidth) / BS));
-    FH   = Math.round(320 / BS);
-    fireEl.width  = FW * BS;
-    fireEl.height = FH * BS;
-    fbuf = new Uint8Array(FW * FH);
-    for (let x = 0; x < FW; x++) {
-      fbuf[x + (FH-1)*FW] = 255;
-      fbuf[x + (FH-2)*FW] = 245;
-    }
-  }
-
-  function spreadFire() {
-    for (let y = 0; y < FH-1; y++) {
-      for (let x = 0; x < FW; x++) {
-        const src  = fbuf[x + (y+1)*FW];
-        const rand = (Math.random()*3)|0;
-        const nx   = Math.max(0, Math.min(FW-1, x + rand - 1));
-        fbuf[nx + y*FW] = src < rand ? 0 : src - rand;
+  function drawFire() {
+    fCtx.clearRect(0, 0, fireEl.width, FIRE_HT);
+    for (let x = 0; x < fcols; x++) {
+      fphases[x]  += 0.04 + Math.random() * 0.04;
+      fheights[x] += (Math.random() - 0.5) * 0.05;
+      fheights[x]  = Math.max(0.2, Math.min(1.0, fheights[x]));
+      const flameH = Math.round((fheights[x] + Math.sin(fphases[x]) * 0.15) * FIRE_HT / FBS) * FBS;
+      for (let y = FIRE_HT - FBS; y > FIRE_HT - flameH; y -= FBS) {
+        const t = (FIRE_HT - y) / flameH;
+        let r, g, b, a;
+        if      (t < 0.25) { r=255; g=Math.round(t/0.25*120);      b=0; a=1; }
+        else if (t < 0.55) { const s=(t-0.25)/0.3; r=255; g=120+Math.round(s*120); b=0; a=1; }
+        else if (t < 0.8)  { const s=(t-0.55)/0.25; r=255; g=240+Math.round(s*15); b=Math.round(s*180); a=0.9-s*0.3; }
+        else               { r=255; g=255; b=220; a=0.15; }
+        fCtx.fillStyle = `rgba(${r},${g},${b},${a})`;
+        fCtx.fillRect(x * FBS, y, FBS, FBS);
       }
     }
-    for (let x = 0; x < FW; x++) {
-      fbuf[x + (FH-1)*FW] = 255;
-      fbuf[x + (FH-2)*FW] = 240 + ((Math.random()*15)|0);
-    }
+    requestAnimationFrame(drawFire);
   }
 
-  function renderFire() {
-    fireCtx.clearRect(0, 0, fireEl.width, fireEl.height);
-    for (let y = 0; y < FH; y++) {
-      for (let x = 0; x < FW; x++) {
-        const col = fireColor(fbuf[x + y*FW]);
-        if (!col) continue;
-        fireCtx.fillStyle = col;
-        fireCtx.fillRect(x*BS, y*BS, BS, BS);
-      }
-    }
-  }
-
-  initFire();
-  window.addEventListener('resize', initFire);
-
-  (function tick() { spreadFire(); renderFire(); requestAnimationFrame(tick); })();
+  setupFire();
+  window.addEventListener('resize', setupFire);
+  drawFire();
 
   // ---- Airtable config ----
   const AIRTABLE_TOKEN   = 'patpAbTIZAn653X4z.bd16c3aca7caa386b94ae94fb5f98ca8c3bb56da18b71a2783e8c99cfa933695';

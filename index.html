@@ -1356,38 +1356,16 @@
       50%       { box-shadow: 0 0 20px rgba(111,240,255,0.8), 0 0 40px rgba(111,240,255,0.3); }
     }
 
-    /* ---- CSS PIXEL FIRES ---- */
-    .fire-row {
+    /* ---- FIRE STRIP CANVAS ---- */
+    #fire-canvas {
       position: fixed;
-      bottom: 0; left: 0; right: 0;
-      display: flex;
-      justify-content: space-around;
-      align-items: flex-end;
-      padding: 0 3%;
-      z-index: 9999;
+      bottom: 0; left: 0;
+      width: 100%;
+      height: 200px;
       pointer-events: none;
+      z-index: 9999;
       image-rendering: pixelated;
     }
-    .px-fire {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transform-origin: bottom center;
-      animation: pfk 0.35s ease-in-out infinite alternate;
-    }
-    .px-fire:nth-child(2n)   { animation-duration: 0.28s; animation-delay: 0.05s; }
-    .px-fire:nth-child(3n)   { animation-duration: 0.42s; animation-delay: 0.12s; }
-    .px-fire:nth-child(4n)   { animation-duration: 0.31s; animation-delay: 0.08s; }
-    @keyframes pfk {
-      0%   { transform: scaleX(1.0) scaleY(1.0); }
-      100% { transform: scaleX(0.85) scaleY(1.15); }
-    }
-    .fr { display: flex; }
-    .fr i { display: block; width: 10px; height: 10px; flex-shrink: 0; }
-    .fr i.y { background: #F5D479; }
-    .fr i.o { background: #FF9900; }
-    .fr i.r { background: #CC3300; }
-    .fr i.d { background: #881100; }
 
     /* ---- RESPONSIVE ---- */
     @media (max-width: 600px) {
@@ -1403,16 +1381,7 @@
 <body>
 
 <canvas id="bg-canvas"></canvas>
-<div class="fire-row">
-  <div class="px-fire"><div class="fr"><i></i><i></i><i class="y"></i><i></i><i></i></div><div class="fr"><i></i><i class="y"></i><i class="y"></i><i class="y"></i><i></i></div><div class="fr"><i></i><i class="o"></i><i class="y"></i><i class="o"></i><i></i></div><div class="fr"><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i></div><div class="fr"><i class="o"></i><i class="r"></i><i class="o"></i><i class="r"></i><i class="o"></i></div><div class="fr"><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i></div><div class="fr"><i class="d"></i><i class="r"></i><i class="d"></i><i class="r"></i><i class="d"></i></div><div class="fr"><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i></div></div>
-  <div class="px-fire"><div class="fr"><i></i><i></i><i class="y"></i><i></i><i></i></div><div class="fr"><i></i><i class="y"></i><i class="y"></i><i class="y"></i><i></i></div><div class="fr"><i></i><i class="o"></i><i class="y"></i><i class="o"></i><i></i></div><div class="fr"><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i></div><div class="fr"><i class="o"></i><i class="r"></i><i class="o"></i><i class="r"></i><i class="o"></i></div><div class="fr"><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i></div><div class="fr"><i class="d"></i><i class="r"></i><i class="d"></i><i class="r"></i><i class="d"></i></div><div class="fr"><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i></div></div>
-  <div class="px-fire"><div class="fr"><i></i><i></i><i class="y"></i><i></i><i></i></div><div class="fr"><i></i><i class="y"></i><i class="y"></i><i class="y"></i><i></i></div><div class="fr"><i></i><i class="o"></i><i class="y"></i><i class="o"></i><i></i></div><div class="fr"><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i></div><div class="fr"><i class="o"></i><i class="r"></i><i class="o"></i><i class="r"></i><i class="o"></i></div><div class="fr"><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i></div><div class="fr"><i class="d"></i><i class="r"></i><i class="d"></i><i class="r"></i><i class="d"></i></div><div class="fr"><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i></div></div>
-  <div class="px-fire"><div class="fr"><i></i><i></i><i class="y"></i><i></i><i></i></div><div class="fr"><i></i><i class="y"></i><i class="y"></i><i class="y"></i><i></i></div><div class="fr"><i></i><i class="o"></i><i class="y"></i><i class="o"></i><i></i></div><div class="fr"><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i></div><div class="fr"><i class="o"></i><i class="r"></i><i class="o"></i><i class="r"></i><i class="o"></i></div><div class="fr"><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i></div><div class="fr"><i class="d"></i><i class="r"></i><i class="d"></i><i class="r"></i><i class="d"></i></div><div class="fr"><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i></div></div>
-  <div class="px-fire"><div class="fr"><i></i><i></i><i class="y"></i><i></i><i></i></div><div class="fr"><i></i><i class="y"></i><i class="y"></i><i class="y"></i><i></i></div><div class="fr"><i></i><i class="o"></i><i class="y"></i><i class="o"></i><i></i></div><div class="fr"><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i></div><div class="fr"><i class="o"></i><i class="r"></i><i class="o"></i><i class="r"></i><i class="o"></i></div><div class="fr"><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i></div><div class="fr"><i class="d"></i><i class="r"></i><i class="d"></i><i class="r"></i><i class="d"></i></div><div class="fr"><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i></div></div>
-  <div class="px-fire"><div class="fr"><i></i><i></i><i class="y"></i><i></i><i></i></div><div class="fr"><i></i><i class="y"></i><i class="y"></i><i class="y"></i><i></i></div><div class="fr"><i></i><i class="o"></i><i class="y"></i><i class="o"></i><i></i></div><div class="fr"><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i></div><div class="fr"><i class="o"></i><i class="r"></i><i class="o"></i><i class="r"></i><i class="o"></i></div><div class="fr"><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i></div><div class="fr"><i class="d"></i><i class="r"></i><i class="d"></i><i class="r"></i><i class="d"></i></div><div class="fr"><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i></div></div>
-  <div class="px-fire"><div class="fr"><i></i><i></i><i class="y"></i><i></i><i></i></div><div class="fr"><i></i><i class="y"></i><i class="y"></i><i class="y"></i><i></i></div><div class="fr"><i></i><i class="o"></i><i class="y"></i><i class="o"></i><i></i></div><div class="fr"><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i></div><div class="fr"><i class="o"></i><i class="r"></i><i class="o"></i><i class="r"></i><i class="o"></i></div><div class="fr"><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i></div><div class="fr"><i class="d"></i><i class="r"></i><i class="d"></i><i class="r"></i><i class="d"></i></div><div class="fr"><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i></div></div>
-  <div class="px-fire"><div class="fr"><i></i><i></i><i class="y"></i><i></i><i></i></div><div class="fr"><i></i><i class="y"></i><i class="y"></i><i class="y"></i><i></i></div><div class="fr"><i></i><i class="o"></i><i class="y"></i><i class="o"></i><i></i></div><div class="fr"><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i><i class="o"></i></div><div class="fr"><i class="o"></i><i class="r"></i><i class="o"></i><i class="r"></i><i class="o"></i></div><div class="fr"><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i><i class="r"></i></div><div class="fr"><i class="d"></i><i class="r"></i><i class="d"></i><i class="r"></i><i class="d"></i></div><div class="fr"><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i></div></div>
-</div>
+<canvas id="fire-canvas"></canvas>
 
 <!-- NAV -->
 <nav>
@@ -2203,6 +2172,63 @@
   // Restore nav label if already logged in
   const _saved = localStorage.getItem('mc_username');
   if (_saved) { navStatsBtn.textContent = _saved.toUpperCase(); navStatsBtn.classList.add('logged-in'); }
+
+  // ---- Fire strip (DOOM algorithm, full width, z-index 9999) ----
+  (function(){
+    const fc = document.getElementById('fire-canvas');
+    const fx = fc.getContext('2d');
+    const SZ = 8; // pixel block size
+    const PAL = [
+      '#881100','#991400','#aa1800','#bb1e00','#cc2400',
+      '#dd2c00','#ee3400','#ff3c00','#ff4e00','#ff6000',
+      '#ff7200','#ff8400','#ff9600','#ffa800','#ffba00',
+      '#ffcc00','#ffd800','#ffe400','#ffee00','#F5D479',
+    ];
+    const MAX = PAL.length - 1;
+    let cols, rows, buf;
+
+    function init() {
+      fc.width  = window.innerWidth;
+      fc.height = 200;
+      cols = Math.ceil(fc.width  / SZ);
+      rows = Math.ceil(fc.height / SZ);
+      buf  = new Uint8Array(cols * rows);
+      // seed entire bottom row at max heat
+      for (let c = 0; c < cols; c++) buf[(rows-1)*cols+c] = MAX;
+    }
+
+    function tick() {
+      for (let r = rows-1; r >= 1; r--) {
+        for (let c = 0; c < cols; c++) {
+          const v = buf[r*cols+c];
+          if (!v) { buf[(r-1)*cols+c] = 0; continue; }
+          const d = (Math.random()*3)|0;
+          const nc = Math.max(0, Math.min(cols-1, c - d + 1));
+          buf[(r-1)*cols+nc] = Math.max(0, v - (d&1));
+        }
+      }
+      // keep bottom hot
+      for (let c = 0; c < cols; c++) buf[(rows-1)*cols+c] = MAX - ((Math.random()*2)|0);
+    }
+
+    function render() {
+      tick();
+      fx.clearRect(0, 0, fc.width, fc.height);
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const v = buf[r*cols+c];
+          if (!v) continue;
+          fx.fillStyle = PAL[v-1];
+          fx.fillRect(c*SZ, r*SZ, SZ, SZ);
+        }
+      }
+      requestAnimationFrame(render);
+    }
+
+    init();
+    window.addEventListener('resize', init);
+    render();
+  })();
 
 </script>
 </body>

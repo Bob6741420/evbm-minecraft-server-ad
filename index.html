@@ -1899,111 +1899,84 @@
     observer.observe(el);
   });
 
-  // ---- Background Canvas: Fire ----
+  // ---- Background Canvas: DOOM Fire ----
   const canvas = document.getElementById('bg-canvas');
-  const ctx = canvas.getContext('2d');
+  const ctx    = canvas.getContext('2d');
 
+  // Offscreen low-res fire buffer
+  const fireCanvas = document.createElement('canvas');
+  const fireCtx    = fireCanvas.getContext('2d');
+
+  const BS = 4; // each fire "pixel" = 4×4 screen pixels
   let W = window.innerWidth;
   let H = window.innerHeight;
   canvas.width = W; canvas.height = H;
 
-  const FIRE_COLORS = ['#FFFFFF','#FFF5AA','#FFE060','#FF9900','#FF5500','#CC2200','#881100'];
-
-  function getFireSources() {
-    const count = Math.max(5, Math.floor(W / 160));
-    return Array.from({length: count}, (_, i) => ({
-      x: (W / (count + 1)) * (i + 1),
-      flicker: Math.random() * Math.PI * 2,
-    }));
-  }
-  let sources = getFireSources();
-
-  function makeParticle(src) {
-    const life = 0.8 + Math.random() * 1.5;
-    return {
-      x: src.x + (Math.random() - 0.5) * 60,
-      y: H,
-      vx: (Math.random() - 0.5) * 2.0,
-      vy: -(1.8 + Math.random() * 4.5),
-      life, maxLife: life,
-      size: 8 + Math.floor(Math.random() * 4) * 8,
-      wobble: (Math.random() - 0.5) * 0.08,
-      srcIdx: sources.indexOf(src),
-    };
+  // Build color palette (index 0–255 → RGBA Uint32)
+  const PALETTE = new Uint32Array(256);
+  for (let i = 0; i < 256; i++) {
+    let r=0, g=0, b=0, a=0;
+    if (i >= 30) {
+      if      (i < 80)  { const t=(i-30)/50;  r=Math.round(t*190);              a=Math.round(t*255); }
+      else if (i < 140) { const t=(i-80)/60;  r=190+Math.round(t*65); g=Math.round(t*90);  a=255; }
+      else if (i < 200) { const t=(i-140)/60; r=255; g=90+Math.round(t*130);    a=255; }
+      else              { const t=(i-200)/55;  r=255; g=220+Math.round(t*35); b=Math.round(t*200); a=255; }
+    }
+    // ImageData is RGBA little-endian: store as ABGR in Uint32
+    PALETTE[i] = (a<<24)|(b<<16)|(g<<8)|r;
   }
 
-  let particles = sources.flatMap(src =>
-    Array.from({length: 50}, () => {
-      const p = makeParticle(src);
-      const frac = Math.random();
-      p.life = p.maxLife * (1 - frac);
-      p.y = H - frac * H * 0.85;
-      return p;
-    })
-  );
+  let FW, FH, fire, imgData, pix32;
+
+  function initFire() {
+    FW = Math.ceil(W / BS);
+    FH = Math.ceil(H / BS);
+    fireCanvas.width  = FW;
+    fireCanvas.height = FH;
+    fire   = new Uint8Array(FW * FH);
+    imgData = fireCtx.createImageData(FW, FH);
+    pix32   = new Uint32Array(imgData.data.buffer);
+    // Seed bottom rows at full heat
+    for (let x = 0; x < FW; x++) {
+      fire[x + (FH-1)*FW] = 255;
+      fire[x + (FH-2)*FW] = 240;
+    }
+  }
+  initFire();
 
   window.addEventListener('resize', () => {
     W = window.innerWidth; H = window.innerHeight;
     canvas.width = W; canvas.height = H;
-    sources = getFireSources();
+    initFire();
   });
 
-  function drawFireBase(src) {
-    src.flicker += 0.07 + Math.random() * 0.05;
-    const f = 0.78 + Math.sin(src.flicker) * 0.22;
+  function spreadFire() {
+    for (let y = 0; y < FH - 1; y++) {
+      for (let x = 0; x < FW; x++) {
+        const src  = fire[x + (y+1)*FW];
+        const rand = (Math.random()*4)|0;
+        const nx   = Math.max(0, Math.min(FW-1, x - (rand&1)));
+        fire[nx + y*FW] = src < rand ? 0 : src - rand;
+      }
+    }
+    // Keep bottom rows hot
+    for (let x = 0; x < FW; x++) {
+      fire[x + (FH-1)*FW] = 255;
+      fire[x + (FH-2)*FW] = 240 + ((Math.random()*16)|0);
+    }
+  }
 
-    const outer = ctx.createRadialGradient(src.x, H, 0, src.x, H - 120, 160 * f);
-    outer.addColorStop(0,   'rgba(255,160,0,0.75)');
-    outer.addColorStop(0.4, 'rgba(255,60,0,0.45)');
-    outer.addColorStop(0.75,'rgba(200,20,0,0.15)');
-    outer.addColorStop(1,   'rgba(0,0,0,0)');
-    ctx.fillStyle = outer;
-    ctx.fillRect(src.x - 180, H - 200, 360, 200);
-
-    const core = ctx.createRadialGradient(src.x, H, 0, src.x, H - 40, 55 * f);
-    core.addColorStop(0,   'rgba(255,255,200,1.0)');
-    core.addColorStop(0.4, 'rgba(255,200,0,0.85)');
-    core.addColorStop(1,   'rgba(255,60,0,0)');
-    ctx.fillStyle = core;
-    ctx.fillRect(src.x - 65, H - 80, 130, 80);
+  function renderFire() {
+    for (let i = 0; i < FW*FH; i++) pix32[i] = PALETTE[fire[i]];
+    fireCtx.putImageData(imgData, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(fireCanvas, 0, 0, FW, FH, 0, 0, W, H);
   }
 
   function draw() {
-    ctx.clearRect(0, 0, W, H);
-
-    // Ground ember glow
-    const glow = ctx.createLinearGradient(0, H - 200, 0, H);
-    glow.addColorStop(0, 'rgba(180,40,0,0)');
-    glow.addColorStop(1, 'rgba(180,40,0,0.55)');
-    ctx.fillStyle = glow;
-    ctx.fillRect(0, H - 200, W, 200);
-
-    sources.forEach(src => drawFireBase(src));
-
-    particles.forEach((p, i) => {
-      const t = 1 - (p.life / p.maxLife);
-      const colorIdx = Math.min(Math.floor(t * FIRE_COLORS.length), FIRE_COLORS.length - 1);
-      const alpha = t < 0.08 ? t * 12.5 : (1 - t);
-      const size = Math.max(4, p.size * (1 - t * 0.6));
-      const px = Math.round(p.x / 4) * 4;
-      const py = Math.round(p.y / 4) * 4;
-
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = FIRE_COLORS[colorIdx];
-      ctx.fillRect(px - size / 2, py - size / 2, size, size);
-
-      p.vx += p.wobble;
-      p.x  += p.vx;
-      p.y  += p.vy;
-      p.life -= 0.013;
-
-      if (p.life <= 0) {
-        const src = sources[p.srcIdx % sources.length] || sources[0];
-        particles[i] = makeParticle(src);
-      }
-    });
-
-    ctx.globalAlpha = 1;
+    spreadFire();
+    renderFire();
     requestAnimationFrame(draw);
   }
 

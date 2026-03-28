@@ -37,12 +37,7 @@
     }
 
     #bg-canvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 10;
-      mix-blend-mode: screen;
+      display: none;
     }
 
     nav, #hero, #features, #about, #ranks, .marquee-wrap, section, footer, #cta, .how-grid-wrap {
@@ -355,41 +350,16 @@
       100% { transform: translateY(-95vh) translateX(var(--dx2)) scale(0.3); opacity: 0; }
     }
 
-    /* Flame shapes */
-    .flame-row {
+    /* Hero fire canvas */
+    #fire-canvas {
       position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 180px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-around;
+      bottom: 0; left: 0;
+      width: 100%;
+      height: 320px;
       pointer-events: none;
       z-index: 2;
-      padding: 0 10px;
-    }
-
-    .flame {
-      position: relative;
-      border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%;
-      transform-origin: bottom center;
-      animation: flicker ease-in-out infinite alternate;
-      flex-shrink: 0;
-    }
-
-    @keyframes flicker {
-      0%   { transform: scaleX(0.85) scaleY(1.05) rotate(-4deg) skewX(-3deg); filter: brightness(0.9); }
-      100% { transform: scaleX(1.1)  scaleY(0.92) rotate(4deg)  skewX(3deg);  filter: brightness(1.2); }
-    }
-
-    /* Fire glow at bottom of hero */
-    #hero::after {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 260px;
-      background: linear-gradient(to top, rgba(255,100,0,0.7) 0%, rgba(255,50,0,0.35) 40%, transparent 100%);
-      pointer-events: none;
-      z-index: 1;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
     }
 
     /* Logo block */
@@ -1509,24 +1479,7 @@
 
   <div class="scroll-hint">▼ SCROLL DOWN ▼</div>
 
-  <!-- Flames at bottom -->
-  <div class="flame-row">
-    <div class="flame" style="width:28px;height:90px; background:linear-gradient(to top,#fff5aa,#ff8800,#ff2200,transparent); animation-duration:0.4s; animation-delay:0s;"></div>
-    <div class="flame" style="width:20px;height:60px; background:linear-gradient(to top,#ffffff,#ffcc00,#ff5500,transparent); animation-duration:0.5s; animation-delay:0.1s;"></div>
-    <div class="flame" style="width:36px;height:130px;background:linear-gradient(to top,#fff5aa,#ff9900,#cc2200,transparent); animation-duration:0.35s;animation-delay:0.2s;"></div>
-    <div class="flame" style="width:22px;height:70px; background:linear-gradient(to top,#ffffff,#ffaa00,#ff3300,transparent); animation-duration:0.45s;animation-delay:0.05s;"></div>
-    <div class="flame" style="width:40px;height:150px;background:linear-gradient(to top,#ffffff,#ffe060,#ff6600,#cc1100,transparent); animation-duration:0.3s; animation-delay:0.15s;"></div>
-    <div class="flame" style="width:18px;height:55px; background:linear-gradient(to top,#ffee88,#ff8800,#ff2200,transparent); animation-duration:0.55s;animation-delay:0.25s;"></div>
-    <div class="flame" style="width:32px;height:110px;background:linear-gradient(to top,#fff5aa,#ff9900,#dd2200,transparent); animation-duration:0.38s;animation-delay:0.08s;"></div>
-    <div class="flame" style="width:24px;height:80px; background:linear-gradient(to top,#ffffff,#ffcc00,#ff4400,transparent); animation-duration:0.48s;animation-delay:0.18s;"></div>
-    <div class="flame" style="width:38px;height:140px;background:linear-gradient(to top,#fff5aa,#ffaa00,#ff3300,#aa1100,transparent); animation-duration:0.32s;animation-delay:0.12s;"></div>
-    <div class="flame" style="width:20px;height:65px; background:linear-gradient(to top,#ffffff,#ffbb00,#ff5500,transparent); animation-duration:0.52s;animation-delay:0.22s;"></div>
-    <div class="flame" style="width:34px;height:120px;background:linear-gradient(to top,#fff5aa,#ff9900,#cc2200,transparent); animation-duration:0.36s;animation-delay:0.06s;"></div>
-    <div class="flame" style="width:22px;height:75px; background:linear-gradient(to top,#ffffff,#ffdd00,#ff4400,transparent); animation-duration:0.46s;animation-delay:0.16s;"></div>
-    <div class="flame" style="width:42px;height:160px;background:linear-gradient(to top,#ffffff,#ffe060,#ff7700,#bb1100,transparent); animation-duration:0.28s;animation-delay:0.04s;"></div>
-    <div class="flame" style="width:18px;height:50px; background:linear-gradient(to top,#ffee88,#ff9900,#ff3300,transparent); animation-duration:0.58s;animation-delay:0.28s;"></div>
-    <div class="flame" style="width:30px;height:100px;background:linear-gradient(to top,#fff5aa,#ffaa00,#dd3300,transparent); animation-duration:0.42s;animation-delay:0.14s;"></div>
-  </div>
+  <canvas id="fire-canvas"></canvas>
 
 </div>
 
@@ -1946,89 +1899,81 @@
     observer.observe(el);
   });
 
-  // ---- Background Canvas: DOOM Fire ----
-  const canvas = document.getElementById('bg-canvas');
-  const ctx    = canvas.getContext('2d');
+  // ---- Hero Fire Canvas (DOOM algorithm) ----
+  const fireEl  = document.getElementById('fire-canvas');
+  const fireCtx = fireEl.getContext('2d');
 
-  // Offscreen low-res fire buffer
-  const fireCanvas = document.createElement('canvas');
-  const fireCtx    = fireCanvas.getContext('2d');
+  const offscreen    = document.createElement('canvas');
+  const offCtx       = offscreen.getContext('2d');
+  const FIRE_BS      = 6; // px per fire "pixel"
+  const FIRE_H_PX    = 320;
 
-  const BS = 4; // each fire "pixel" = 4×4 screen pixels
-  let W = window.innerWidth;
-  let H = window.innerHeight;
-  canvas.width = W; canvas.height = H;
-
-  // Build color palette (index 0–255 → RGBA Uint32)
-  const PALETTE = new Uint32Array(256);
+  // Palette: black → red → orange → yellow → white
+  const PAL = new Uint32Array(256);
   for (let i = 0; i < 256; i++) {
-    let r=0, g=0, b=0, a=0;
-    if (i >= 30) {
-      if      (i < 80)  { const t=(i-30)/50;  r=Math.round(t*190);              a=Math.round(t*255); }
-      else if (i < 140) { const t=(i-80)/60;  r=190+Math.round(t*65); g=Math.round(t*90);  a=255; }
-      else if (i < 200) { const t=(i-140)/60; r=255; g=90+Math.round(t*130);    a=255; }
-      else              { const t=(i-200)/55;  r=255; g=220+Math.round(t*35); b=Math.round(t*200); a=255; }
+    let r=0,g=0,b=0,a=0;
+    if (i>0) {
+      if      (i<60)  { const t=i/60;        r=Math.round(t*210);                    a=Math.round(t*255); }
+      else if (i<120) { const t=(i-60)/60;   r=210+Math.round(t*45); g=Math.round(t*100); a=255; }
+      else if (i<190) { const t=(i-120)/70;  r=255; g=100+Math.round(t*130);         a=255; }
+      else            { const t=(i-190)/65;  r=255; g=230+Math.round(t*25); b=Math.round(t*255); a=255; }
     }
-    // ImageData is RGBA little-endian: store as ABGR in Uint32
-    PALETTE[i] = (a<<24)|(b<<16)|(g<<8)|r;
+    PAL[i] = (a<<24)|(b<<16)|(g<<8)|r;
   }
 
-  let FW, FH, fire, imgData, pix32;
+  let FW, FH, fbuf, fimg, fpix;
 
-  function initFire() {
-    FW = Math.ceil(W / BS);
-    FH = Math.ceil(H / BS);
-    fireCanvas.width  = FW;
-    fireCanvas.height = FH;
-    fire   = new Uint8Array(FW * FH);
-    imgData = fireCtx.createImageData(FW, FH);
-    pix32   = new Uint32Array(imgData.data.buffer);
-    // Seed bottom rows at full heat
+  function initHeroFire() {
+    const W = fireEl.offsetWidth || window.innerWidth;
+    FW = Math.ceil(W / FIRE_BS);
+    FH = Math.ceil(FIRE_H_PX / FIRE_BS);
+    fireEl.width  = FW * FIRE_BS;
+    fireEl.height = FH * FIRE_BS;
+    offscreen.width  = FW;
+    offscreen.height = FH;
+    fbuf = new Uint8Array(FW * FH);
+    fimg = offCtx.createImageData(FW, FH);
+    fpix = new Uint32Array(fimg.data.buffer);
     for (let x = 0; x < FW; x++) {
-      fire[x + (FH-1)*FW] = 255;
-      fire[x + (FH-2)*FW] = 240;
+      fbuf[x + (FH-1)*FW] = 255;
+      fbuf[x + (FH-2)*FW] = 245;
+      fbuf[x + (FH-3)*FW] = 225;
     }
   }
-  initFire();
 
-  window.addEventListener('resize', () => {
-    W = window.innerWidth; H = window.innerHeight;
-    canvas.width = W; canvas.height = H;
-    initFire();
-  });
+  window.addEventListener('resize', initHeroFire);
+  initHeroFire();
 
-  function spreadFire() {
-    for (let y = 0; y < FH - 1; y++) {
+  function spreadHeroFire() {
+    for (let y = 0; y < FH-1; y++) {
       for (let x = 0; x < FW; x++) {
-        const src  = fire[x + (y+1)*FW];
-        const rand = (Math.random()*3)|0; // 0-2: slow cooling = tall flames
+        const src  = fbuf[x + (y+1)*FW];
+        const rand = (Math.random()*3)|0;
         const nx   = Math.max(0, Math.min(FW-1, x + rand - 1));
-        fire[nx + y*FW] = src < rand ? 0 : src - rand;
+        fbuf[nx + y*FW] = src < rand ? 0 : src - rand;
       }
     }
-    // Keep bottom rows blazing
     for (let x = 0; x < FW; x++) {
-      fire[x + (FH-1)*FW] = 255;
-      fire[x + (FH-2)*FW] = 245 + ((Math.random()*10)|0);
-      fire[x + (FH-3)*FW] = 220 + ((Math.random()*20)|0);
+      fbuf[x + (FH-1)*FW] = 255;
+      fbuf[x + (FH-2)*FW] = 240 + ((Math.random()*15)|0);
+      fbuf[x + (FH-3)*FW] = 215 + ((Math.random()*25)|0);
     }
   }
 
-  function renderFire() {
-    for (let i = 0; i < FW*FH; i++) pix32[i] = PALETTE[fire[i]];
-    fireCtx.putImageData(imgData, 0, 0);
-    ctx.clearRect(0, 0, W, H);
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(fireCanvas, 0, 0, FW, FH, 0, 0, W, H);
+  function renderHeroFire() {
+    for (let i = 0; i < FW*FH; i++) fpix[i] = PAL[fbuf[i]];
+    offCtx.putImageData(fimg, 0, 0);
+    fireCtx.clearRect(0, 0, fireEl.width, fireEl.height);
+    fireCtx.imageSmoothingEnabled = false;
+    fireCtx.drawImage(offscreen, 0, 0, FW, FH, 0, 0, fireEl.width, fireEl.height);
   }
 
-  function draw() {
-    spreadFire();
-    renderFire();
-    requestAnimationFrame(draw);
+  function fireTick() {
+    spreadHeroFire();
+    renderHeroFire();
+    requestAnimationFrame(fireTick);
   }
-
-  requestAnimationFrame(draw);
+  requestAnimationFrame(fireTick);
 
   // ---- Airtable config ----
   const AIRTABLE_TOKEN   = 'patpAbTIZAn653X4z.bd16c3aca7caa386b94ae94fb5f98ca8c3bb56da18b71a2783e8c99cfa933695';

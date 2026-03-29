@@ -28,7 +28,7 @@
     html { scroll-behavior: smooth; }
 
     body {
-      background: #5B8DD9;
+      background: linear-gradient(to top, #3a0800 0%, #1a0400 30%, #0a0510 100%);
       color: var(--white);
       font-family: 'Press Start 2P', monospace;
       overflow-x: hidden;
@@ -1323,6 +1323,28 @@
     }
 
 
+    /* ---- FIRE STRIP ---- */
+    #fire-strip {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 120px;
+      pointer-events: none;
+      z-index: 99999;
+      background: linear-gradient(to top,
+        #881100 0%,
+        #CC2200 20%,
+        #FF5500 45%,
+        #FF9900 70%,
+        #F5D479 90%,
+        transparent 100%
+      );
+      animation: fireFlicker 0.4s ease-in-out infinite alternate;
+    }
+    @keyframes fireFlicker {
+      0%   { transform: scaleY(1.00); opacity: 1;    }
+      100% { transform: scaleY(1.08); opacity: 0.92; }
+    }
+
     /* ---- CLOUD PARALLAX WRAPPERS ---- */
     .cloud-wrap {
       position: fixed;
@@ -1525,6 +1547,7 @@
   <rect x="862" y="148" width="96" height="16" fill="#2A6010"/>
   <rect x="862" y="68"  width="96" height="12" fill="rgba(255,255,255,0.18)"/>
 </svg>
+<div id="fire-strip"></div>
 <div class="cloud-wrap" id="cw-a"><div class="mc-cloud mc-cloud-a"></div></div>
 <div class="cloud-wrap" id="cw-b"><div class="mc-cloud mc-cloud-b"></div></div>
 <div class="cloud-wrap" id="cw-c"><div class="mc-cloud mc-cloud-c"></div></div>

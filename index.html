@@ -1323,26 +1323,13 @@
     }
 
 
-    /* ---- FIRE STRIP ---- */
-    #fire-strip {
+    /* ---- FIRE CANVAS ---- */
+    #fire-canvas {
       position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: 120px;
+      bottom: 0; left: 0;
+      width: 100%; height: 320px;
       pointer-events: none;
       z-index: 99999;
-      background: linear-gradient(to top,
-        #881100 0%,
-        #CC2200 20%,
-        #FF5500 45%,
-        #FF9900 70%,
-        #F5D479 90%,
-        transparent 100%
-      );
-      animation: fireFlicker 0.4s ease-in-out infinite alternate;
-    }
-    @keyframes fireFlicker {
-      0%   { transform: scaleY(1.00); opacity: 1;    }
-      100% { transform: scaleY(1.08); opacity: 0.92; }
     }
 
     /* ---- CLOUD PARALLAX WRAPPERS ---- */
@@ -1547,7 +1534,7 @@
   <rect x="862" y="148" width="96" height="16" fill="#2A6010"/>
   <rect x="862" y="68"  width="96" height="12" fill="rgba(255,255,255,0.18)"/>
 </svg>
-<div id="fire-strip"></div>
+<canvas id="fire-canvas"></canvas>
 <div class="cloud-wrap" id="cw-a"><div class="mc-cloud mc-cloud-a"></div></div>
 <div class="cloud-wrap" id="cw-b"><div class="mc-cloud mc-cloud-b"></div></div>
 <div class="cloud-wrap" id="cw-c"><div class="mc-cloud mc-cloud-c"></div></div>
@@ -2259,6 +2246,118 @@
   // Restore nav label if already logged in
   const _saved = localStorage.getItem('mc_username');
   if (_saved) { navStatsBtn.textContent = _saved.toUpperCase(); navStatsBtn.classList.add('logged-in'); }
+
+  // ---- Canvas Fire ----
+  (function initFire() {
+    const fc  = document.getElementById('fire-canvas');
+    const fctx = fc.getContext('2d');
+    let FW = window.innerWidth;
+    const FH = 320;
+    fc.width  = FW;
+    fc.height = FH;
+
+    const FIRE_COLORS = ['#FFE060','#FFB700','#FF9900','#FF5500','#CC2200','#881100','#550800'];
+
+    function getSources() {
+      const n = Math.max(4, Math.floor(FW / 180));
+      return Array.from({length: n}, (_, i) => ({
+        x: (FW / (n + 1)) * (i + 1),
+        flicker: Math.random() * Math.PI * 2
+      }));
+    }
+    let sources = getSources();
+
+    function makeParticle(src) {
+      const life = 0.8 + Math.random() * 1.6;
+      return {
+        x:       src.x + (Math.random() - 0.5) * 80,
+        y:       FH,
+        vx:      (Math.random() - 0.5) * 2,
+        vy:      -(2 + Math.random() * 5),
+        life,
+        maxLife: life,
+        size:    8 + Math.floor(Math.random() * 4) * 8,
+        wobble:  (Math.random() - 0.5) * 0.08,
+        srcIdx:  sources.indexOf(src)
+      };
+    }
+
+    let particles = sources.flatMap(src =>
+      Array.from({length: 55}, () => {
+        const p = makeParticle(src);
+        const frac = Math.random();
+        p.life = p.maxLife * (1 - frac);
+        p.y = FH - frac * FH * 0.9;
+        return p;
+      })
+    );
+
+    window.addEventListener('resize', () => {
+      FW = window.innerWidth;
+      fc.width = FW;
+      sources = getSources();
+    });
+
+    function drawGlow(src) {
+      src.flicker += 0.07 + Math.random() * 0.05;
+      const f = 0.78 + Math.sin(src.flicker) * 0.22;
+
+      const outer = fctx.createRadialGradient(src.x, FH, 0, src.x, FH - 100, 180 * f);
+      outer.addColorStop(0,    'rgba(255,140,0,0.8)');
+      outer.addColorStop(0.35, 'rgba(255,50,0,0.5)');
+      outer.addColorStop(0.7,  'rgba(180,20,0,0.2)');
+      outer.addColorStop(1,    'rgba(0,0,0,0)');
+      fctx.fillStyle = outer;
+      fctx.fillRect(src.x - 200, FH - 200, 400, 200);
+
+      const core = fctx.createRadialGradient(src.x, FH, 0, src.x, FH - 50, 65 * f);
+      core.addColorStop(0,   'rgba(255,255,180,1.0)');
+      core.addColorStop(0.4, 'rgba(255,200,0,0.9)');
+      core.addColorStop(1,   'rgba(255,60,0,0)');
+      fctx.fillStyle = core;
+      fctx.fillRect(src.x - 75, FH - 90, 150, 90);
+    }
+
+    function drawFire() {
+      fctx.clearRect(0, 0, FW, FH);
+
+      const base = fctx.createLinearGradient(0, FH - 60, 0, FH);
+      base.addColorStop(0, 'rgba(160,30,0,0)');
+      base.addColorStop(1, 'rgba(160,30,0,0.6)');
+      fctx.fillStyle = base;
+      fctx.fillRect(0, FH - 60, FW, 60);
+
+      sources.forEach(drawGlow);
+
+      particles.forEach((p, i) => {
+        const t = 1 - p.life / p.maxLife;
+        const colorIdx = Math.min(Math.floor(t * FIRE_COLORS.length), FIRE_COLORS.length - 1);
+        const alpha = t < 0.08 ? t * 12.5 : (1 - t);
+        const size  = Math.max(4, p.size * (1 - t * 0.6));
+        const px    = Math.round(p.x / 4) * 4;
+        const py    = Math.round(p.y / 4) * 4;
+
+        fctx.globalAlpha = alpha;
+        fctx.fillStyle   = FIRE_COLORS[colorIdx];
+        fctx.fillRect(px - size / 2, py - size / 2, size, size);
+
+        p.vx += p.wobble;
+        p.x  += p.vx;
+        p.y  += p.vy;
+        p.life -= 0.013;
+
+        if (p.life <= 0) {
+          const src = sources[p.srcIdx % sources.length] || sources[0];
+          particles[i] = makeParticle(src);
+        }
+      });
+
+      fctx.globalAlpha = 1;
+      requestAnimationFrame(drawFire);
+    }
+
+    requestAnimationFrame(drawFire);
+  })();
 
   // ---- Web Audio Sound Engine ----
   let _audioCtx = null;
